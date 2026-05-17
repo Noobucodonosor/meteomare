@@ -1,0 +1,14 @@
+{
+  "name": "meteomare",
+  "version": "1.0.0",
+  "description": "Sistema meteorologico per il Promontorio di Portofino e la rotta Cinque Terre",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "dotenv": "^16.4.0"
+  }
+}
