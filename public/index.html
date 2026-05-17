@@ -360,15 +360,16 @@ async function fetchHistoryDates(){try{return(await fetch('/api/history/dates'))
 
 function normBatch(wB,mB,pts){
     const today=todayS(),tmw=tmwS(),result={};
+    // Open-Meteo batch: 1 punto → oggetto, N punti → array di oggetti
+    const wArr=Array.isArray(wB)?wB:[wB];
+    const mArr=mB?(Array.isArray(mB)?mB:[mB]):[];
     pts.forEach((pt,idx)=>{
         const key=`${pt.lat}_${pt.lon}`;const tH={},mH={};
-        let wH=Array.isArray(wB)?wB[idx]?.hourly:wB.hourly;
-        let mHr=mB?(Array.isArray(mB)?mB[idx]?.hourly:mB.hourly):null;
-        let daily=Array.isArray(wB)?wB[idx]?.daily:wB.daily;
-        // Handle multi-point: Open-Meteo returns array of hourly objects
-        if(wB.hourly&&Array.isArray(wB.hourly)&&wB.hourly[0]?.time)wH=idx===0?wB.hourly:wB.hourly;
-        if(!wH?.time)return;
-        const times=wH.time||[];
+        const wItem=wArr[idx];if(!wItem?.hourly?.time)return;
+        const wH=wItem.hourly;
+        const mHr=mArr[idx]?.hourly||null;
+        const daily=wItem.daily||null;
+        const times=wH.time;
         times.forEach((t,i)=>{const ds=t.substring(0,10),h=parseInt(t.substring(11,13)),code=wH.weather_code?.[i]||0;
         const e={wind:wH.wind_speed_10m?.[i]||0,gusts:wH.wind_gusts_10m?.[i]||0,windDir:wH.wind_direction_10m?.[i]||0,vis:wH.visibility?.[i]||50000,temp:wH.temperature_2m?.[i]||0,precip:wH.precipitation?.[i]||0,code,emoji:WE[code]||'🌤️',desc:WD[code]||'',severity:evCode(code),
         waves:mHr?.wave_height?.[i]??null,wavePer:mHr?.wave_period?.[i]??null,waveDir:mHr?.wave_direction?.[i]??null,swellH:mHr?.swell_wave_height?.[i]??null,swellP:mHr?.swell_wave_period?.[i]??null,swellD:mHr?.swell_wave_direction?.[i]??null};
