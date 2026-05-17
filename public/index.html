@@ -12,143 +12,164 @@
 <style>
 :root{--bg:#0B1120;--bg2:#111827;--card:#1A2332;--card2:#1F2A3D;--border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.1);--text:#F1F5F9;--text2:#94A3B8;--text3:#64748B;--gold:#D4A853;--green:#34D399;--green2:#059669;--gg:rgba(52,211,153,.15);--amber:#FBBF24;--amber2:#D97706;--ag:rgba(251,191,36,.12);--red:#F87171;--red2:#DC2626;--rg:rgba(248,113,113,.12);}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
-header{background:var(--bg2);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;border-bottom:1px solid var(--border);}
-.hl{display:flex;align-items:center;gap:10px;}.hl .logo{font-size:22px;}.hl h1{font-size:15px;font-weight:700;}.hl .sub{font-size:9px;color:var(--gold);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;}
-.bi{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text2);width:36px;height:36px;border-radius:10px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.bi:active{background:rgba(255,255,255,.1);}.bi.spin{animation:sp 1s linear infinite;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+header{background:var(--bg2);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;border-bottom:1px solid var(--border);}
+.hl{display:flex;align-items:center;gap:8px;}.hl .logo{font-size:20px;}.hl h1{font-size:14px;font-weight:700;}.hl .sub{font-size:8px;color:var(--gold);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
+.hbtns{display:flex;gap:6px;align-items:center;}
+.bi{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text2);width:34px;height:34px;border-radius:8px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.bi:active{background:rgba(255,255,255,.1);}.bi.spin{animation:sp 1s linear infinite;}.bi.active{background:var(--gold);color:var(--bg);border-color:var(--gold);}
 @keyframes sp{to{transform:rotate(360deg);}}
-.rule{background:var(--red2);text-align:center;padding:6px;font-size:9px;font-weight:700;letter-spacing:1.5px;color:white;}
+/* MODE TOGGLE */
+.mode-tog{display:flex;background:var(--card);border-radius:8px;border:1px solid var(--border2);overflow:hidden;}
+.mode-btn{padding:6px 10px;font-size:10px;font-weight:700;color:var(--text3);background:none;border:none;cursor:pointer;letter-spacing:.3px;}
+.mode-btn.a{background:var(--gold);color:var(--bg);}
+.rule{background:var(--red2);text-align:center;padding:5px;font-size:8px;font-weight:700;letter-spacing:1.5px;color:white;}
 .tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);}
-.tb{flex:1;padding:11px 4px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;}
+.tb{flex:1;padding:10px 4px;text-align:center;font-size:9px;font-weight:700;letter-spacing:.3px;color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;}
 .tb.a{color:var(--gold);border-bottom-color:var(--gold);}
-/* MAP + CANVAS OVERLAY */
-#mapWrap{position:relative;width:100%;height:42vh;min-height:300px;}
+#mapWrap{position:relative;width:100%;height:35vh;min-height:240px;}
 #map{width:100%;height:100%;z-index:1;}
 #windCanvas{position:absolute;inset:0;z-index:10;pointer-events:none;}
 .leaflet-popup-content-wrapper{background:var(--card)!important;color:var(--text)!important;border-radius:10px!important;box-shadow:0 4px 24px rgba(0,0,0,.5)!important;border:1px solid var(--border2)!important;}
 .leaflet-popup-tip{background:var(--card)!important;}
-.leaflet-popup-content{margin:10px 14px!important;font-family:'Inter',sans-serif!important;font-size:12px!important;line-height:1.6!important;}
+.leaflet-popup-content{margin:8px 12px!important;font-family:'Inter',sans-serif!important;font-size:11px!important;line-height:1.5!important;}
 .leaflet-popup-content strong{color:var(--gold);}
 .leaflet-control-attribution{display:none!important;}
-.src-bar{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;font-size:10px;color:var(--text3);background:var(--bg2);border-bottom:1px solid var(--border);}
-.sd{width:6px;height:6px;border-radius:50%;}.sd.on{background:var(--green);box-shadow:0 0 6px var(--green);}.sd.off{background:var(--text3);}
-main{padding:16px;max-width:520px;margin:0 auto;}.tc{display:none;}.tc.a{display:block;}
+.src-bar{display:flex;align-items:center;justify-content:center;gap:6px;padding:5px;font-size:9px;color:var(--text3);background:var(--bg2);border-bottom:1px solid var(--border);}
+.sd{width:5px;height:5px;border-radius:50%;}.sd.on{background:var(--green);box-shadow:0 0 4px var(--green);}.sd.off{background:var(--text3);}
+main{padding:12px;max-width:520px;margin:0 auto;}.tc{display:none;}.tc.a{display:block;}
+/* CMD-ONLY: hidden in direttrice mode */
+body.dir .cmd{display:none!important;}
 /* STATUS */
-.st{border-radius:14px;padding:20px;text-align:center;margin-bottom:16px;border:1px solid var(--border2);}
+.st{border-radius:14px;padding:20px;text-align:center;margin-bottom:14px;border:1px solid var(--border2);}
 .st.green{background:linear-gradient(135deg,rgba(5,150,105,.18),rgba(4,120,87,.05));border-color:rgba(52,211,153,.2);box-shadow:0 0 30px var(--gg);}
 .st.amber{background:linear-gradient(135deg,rgba(217,119,6,.18),rgba(180,83,9,.05));border-color:rgba(251,191,36,.2);box-shadow:0 0 30px var(--ag);}
 .st.red{background:linear-gradient(135deg,rgba(220,38,38,.18),rgba(185,28,28,.05));border-color:rgba(248,113,113,.2);box-shadow:0 0 30px var(--rg);}
-.st-i{font-size:36px;margin-bottom:4px;}.st-t{font-size:20px;font-weight:800;letter-spacing:1.5px;margin-bottom:4px;}
+.st-i{font-size:36px;margin-bottom:2px;}.st-t{font-size:20px;font-weight:800;letter-spacing:1.5px;margin-bottom:4px;}
 .st.green .st-t{color:var(--green);}.st.amber .st-t{color:var(--amber);}.st.red .st-t{color:var(--red);}
-.st-s{font-size:12px;color:var(--text2);line-height:1.5;}.st-x{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);}
-.sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin:20px 0 8px 2px;}
-/* SAN FRUTTUOSO RISACCA */
-.sf{background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);margin-bottom:14px;position:relative;overflow:hidden;}
-.sf::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
+.st-s{font-size:12px;color:var(--text2);line-height:1.5;}.st-x{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:10px;color:var(--text3);}
+.sec{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin:18px 0 8px 2px;}
+/* SAN FRUTTUOSO */
+.sf{background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;position:relative;overflow:hidden;}
+.sf::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
 .sf.ok::before{background:var(--green);}.sf.mod::before{background:var(--amber);}.sf.bad::before{background:var(--red);}
-.sf-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
-.sf-n{font-size:14px;font-weight:800;}.sf-l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
-.sf-v{font-size:18px;font-weight:800;text-align:right;}.sf-dk{font-size:10px;font-weight:600;margin-top:2px;}
+.sf-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.sf-n{font-size:13px;font-weight:800;}.sf-l{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:1px;}
+.sf-v{font-size:16px;font-weight:800;text-align:right;}.sf-dk{font-size:9px;font-weight:600;margin-top:1px;}
 .sf.ok .sf-v,.sf.ok .sf-dk{color:var(--green);}.sf.mod .sf-v,.sf.mod .sf-dk{color:var(--amber);}.sf.bad .sf-v,.sf.bad .sf-dk{color:var(--red);}
-.sf-ms{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding-top:10px;border-top:1px solid var(--border);}
-.sf-m{text-align:center;}.sf-mv{font-size:15px;font-weight:700;}.sf-ml{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:1px;}
-.sf-info{margin-top:10px;padding:8px 12px;background:rgba(255,255,255,.02);border-radius:8px;font-size:11px;color:var(--text3);line-height:1.6;border:1px solid var(--border);}
+.sf-ms{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding-top:8px;border-top:1px solid var(--border);}
+.sf-m{text-align:center;}.sf-mv{font-size:14px;font-weight:700;}.sf-ml{font-size:7px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
+.sf-info{margin-top:8px;padding:6px 10px;background:rgba(255,255,255,.02);border-radius:6px;font-size:10px;color:var(--text3);line-height:1.5;border:1px solid var(--border);}
 .sf-info strong{color:var(--text2);}
-/* PORTO RISACCA (smaller card) */
-.pr{background:var(--card);border-radius:12px;padding:12px 14px;border:1px solid var(--border);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
-.pr-left{display:flex;align-items:center;gap:10px;}.pr-dot{width:10px;height:10px;border-radius:50;flex-shrink:0;}
-.pr-dot.green{background:var(--green);}.pr-dot.amber{background:var(--amber);}.pr-dot.red{background:var(--red);}
-.pr-name{font-size:12px;font-weight:700;}.pr-val{font-size:12px;font-weight:700;color:var(--text2);}
-/* WIND ROSE */
-.wr-w{background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);margin-bottom:14px;}
-.wr{position:relative;width:240px;height:240px;margin:0 auto;}
-.wr-ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--border2);}
-.wr-d{position:absolute;font-size:8px;font-weight:700;text-align:center;color:var(--text3);line-height:1.1;text-transform:uppercase;letter-spacing:.5px;transition:color .3s,transform .3s;}
-.wr-d.act{color:var(--amber);transform:scale(1.15);}
-.wr-d i{display:block;font-size:7px;font-weight:600;font-style:normal;letter-spacing:1px;margin-top:1px;}
-.wr-arr{position:absolute;top:50%;left:50%;width:3px;height:80px;transform-origin:bottom center;margin-left:-1.5px;margin-top:-80px;border-radius:3px;background:var(--amber);transition:transform .6s ease-out;box-shadow:0 0 8px var(--ag);}
-.wr-arr::after{content:'';position:absolute;top:-5px;left:-4.5px;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:9px solid var(--amber);}
-.wr-c{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;background:var(--bg);width:58px;height:58px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--border2);}
-.wr-sp{font-size:20px;font-weight:900;}.wr-u{font-size:8px;color:var(--text3);font-weight:600;letter-spacing:1px;}
-.wr-name{text-align:center;margin-top:10px;font-size:13px;font-weight:700;color:var(--amber);}
-.wr-desc{text-align:center;font-size:10px;color:var(--text3);margin-top:4px;line-height:1.5;max-width:260px;margin-left:auto;margin-right:auto;}
-/* ROUTE PANELS */
-.route-sec{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--border);margin-bottom:14px;}
-.route-h{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);}
-.route-h-icon{font-size:20px;}.route-h-title{font-size:13px;font-weight:700;}.route-h-dist{font-size:10px;color:var(--text3);margin-left:auto;}
-.route-h-st{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;}
+/* SMALL CARDS */
+.sm-row{display:flex;gap:8px;margin-bottom:12px;}
+.sm{flex:1;background:var(--card);border-radius:10px;padding:10px 12px;border:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.sm-icon{font-size:18px;}.sm-name{font-size:10px;font-weight:700;}.sm-val{font-size:10px;color:var(--text2);}
+.sm-badge{font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:auto;}
+.sm-badge.ok{background:var(--gg);color:var(--green);}.sm-badge.warn{background:var(--ag);color:var(--amber);}.sm-badge.danger{background:var(--rg);color:var(--red);}
+/* CHARTS */
+.chart-wrap{background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);margin-bottom:12px;}
+.chart-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.chart-wrap canvas{width:100%!important;height:180px!important;}
+/* ROUTE */
+.route-sec{background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);margin-bottom:12px;}
+.route-h{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.route-h-icon{font-size:18px;}.route-h-title{font-size:12px;font-weight:700;}.route-h-dist{font-size:9px;color:var(--text3);margin-left:auto;}
+.route-h-st{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;}
 .route-h-st.green{background:var(--gg);color:var(--green);}.route-h-st.amber{background:var(--ag);color:var(--amber);}.route-h-st.red{background:var(--rg);color:var(--red);}
 .rs{display:flex;flex-direction:column;}
-.rw{display:flex;align-items:flex-start;gap:12px;position:relative;}.rw:not(:last-child){padding-bottom:14px;}
-.rl{position:absolute;left:6px;top:18px;bottom:0;width:2px;}.rw:last-child .rl{display:none;}
+.rw{display:flex;align-items:flex-start;gap:10px;position:relative;}.rw:not(:last-child){padding-bottom:12px;}
+.rl{position:absolute;left:5px;top:16px;bottom:0;width:2px;}.rw:last-child .rl{display:none;}
 .rl.green{background:var(--green2);}.rl.amber{background:var(--amber2);}.rl.red{background:var(--red2);}.rl.gray{background:var(--border2);}
-.rd{width:14px;height:14px;border-radius:50%;flex-shrink:0;z-index:1;margin-top:1px;border:2px solid var(--bg);}
-.rd.green{background:var(--green);box-shadow:0 0 6px var(--gg);}.rd.amber{background:var(--amber);}.rd.red{background:var(--red);box-shadow:0 0 6px var(--rg);}.rd.gray{background:var(--text3);}
+.rd{width:12px;height:12px;border-radius:50%;flex-shrink:0;z-index:1;margin-top:1px;border:2px solid var(--bg);}
+.rd.green{background:var(--green);}.rd.amber{background:var(--amber);}.rd.red{background:var(--red);}.rd.gray{background:var(--text3);}
 .ri{flex:1;min-width:0;}.rh{display:flex;justify-content:space-between;align-items:baseline;}
-.rn{font-size:12px;font-weight:700;}.rt{font-size:10px;color:var(--text3);font-weight:600;}
-.rm{display:flex;gap:8px;margin-top:3px;font-size:11px;color:var(--text2);flex-wrap:wrap;}
-.rb{display:inline-block;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;margin-top:4px;margin-right:3px;letter-spacing:.3px;}
-.rb.w{color:var(--amber);background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.12);}
-.rb.c{color:var(--red);background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.12);}
-.rb.s{color:var(--text3);background:rgba(255,255,255,.02);border:1px solid var(--border);}
+.rn{font-size:11px;font-weight:700;}.rt{font-size:9px;color:var(--text3);}
+.rm{display:flex;gap:8px;margin-top:2px;font-size:10px;color:var(--text2);}
+.rb{display:inline-block;font-size:7px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:3px;margin-right:2px;}
+.rb.w{color:var(--amber);background:rgba(251,191,36,.08);}.rb.c{color:var(--red);background:rgba(248,113,113,.08);}.rb.s{color:var(--text3);background:rgba(255,255,255,.02);}
 /* METRICS */
-.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
-.mc{background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);position:relative;overflow:hidden;}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.mc{background:var(--card);border-radius:10px;padding:10px;border:1px solid var(--border);position:relative;overflow:hidden;}
 .mc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
 .mc.green::before{background:var(--green);}.mc.amber::before{background:var(--amber);}.mc.red::before{background:var(--red);}
-.mc-l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;font-weight:600;}
-.mc-v{font-size:22px;font-weight:800;}.mc-u{font-size:10px;font-weight:500;color:var(--text3);}
-.mc-d{font-size:10px;color:var(--text3);margin-top:2px;}
+.mc-l{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;font-weight:600;}
+.mc-v{font-size:20px;font-weight:800;}.mc-u{font-size:10px;font-weight:500;color:var(--text3);}
+.mc-d{font-size:9px;color:var(--text3);margin-top:2px;}
 /* TIMELINE */
-.tls{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:0 16px;scrollbar-width:none;}.tls::-webkit-scrollbar{display:none;}
-.tl{display:flex;gap:5px;min-width:min-content;}
-.th{display:flex;flex-direction:column;align-items:center;min-width:46px;padding:7px 3px;background:var(--card);border-radius:8px;border:1px solid var(--border);}
-.th.now{border-color:var(--gold);box-shadow:0 0 10px rgba(212,168,83,.1);}
-.th-t{font-size:9px;font-weight:700;color:var(--text3);margin-bottom:4px;}.th-d{width:9px;height:9px;border-radius:50%;margin-bottom:4px;}
+.tls{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -12px;padding:0 12px;scrollbar-width:none;}.tls::-webkit-scrollbar{display:none;}
+.tl{display:flex;gap:4px;min-width:min-content;}
+.th{display:flex;flex-direction:column;align-items:center;min-width:42px;padding:6px 3px;background:var(--card);border-radius:8px;border:1px solid var(--border);}
+.th.now{border-color:var(--gold);box-shadow:0 0 8px rgba(212,168,83,.1);}
+.th-t{font-size:8px;font-weight:700;color:var(--text3);margin-bottom:3px;}.th-d{width:8px;height:8px;border-radius:50%;margin-bottom:3px;}
 .th-d.green{background:var(--green);}.th-d.amber{background:var(--amber);}.th-d.red{background:var(--red);}
-.th-i{font-size:12px;margin-bottom:2px;}.th-v{font-size:8px;color:var(--text3);white-space:nowrap;}
+.th-i{font-size:11px;margin-bottom:1px;}.th-v{font-size:8px;color:var(--text3);white-space:nowrap;}
+/* DATA TABLE */
+.dtable{background:var(--card);border-radius:12px;border:1px solid var(--border);overflow-x:auto;margin-bottom:12px;}
+.dtable table{width:100%;border-collapse:collapse;font-size:9px;min-width:500px;}
+.dtable th{position:sticky;top:0;background:var(--card2);color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:6px 8px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;}
+.dtable th:first-child{text-align:left;}
+.dtable td{padding:5px 8px;text-align:right;border-bottom:1px solid var(--border);color:var(--text2);white-space:nowrap;}
+.dtable td:first-child{text-align:left;color:var(--text);font-weight:600;}
+.dtable tr.now-row{background:rgba(212,168,83,.06);}
+.dtable tr.now-row td:first-child{color:var(--gold);}
+/* WIND ROSE */
+.wr-w{background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;}
+.wr{position:relative;width:220px;height:220px;margin:0 auto;}
+.wr-ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--border2);}
+.wr-d{position:absolute;font-size:7px;font-weight:700;text-align:center;color:var(--text3);line-height:1.1;text-transform:uppercase;letter-spacing:.3px;transition:color .3s;}
+.wr-d.act{color:var(--amber);}
+.wr-d i{display:block;font-size:6px;font-weight:600;font-style:normal;letter-spacing:.5px;margin-top:1px;}
+.wr-arr{position:absolute;top:50%;left:50%;width:2px;height:70px;transform-origin:bottom center;margin-left:-1px;margin-top:-70px;border-radius:2px;background:var(--amber);transition:transform .6s ease-out;box-shadow:0 0 6px var(--ag);}
+.wr-arr::after{content:'';position:absolute;top:-4px;left:-4px;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:8px solid var(--amber);}
+.wr-c{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;background:var(--bg);width:50px;height:50px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--border2);}
+.wr-sp{font-size:18px;font-weight:900;}.wr-u{font-size:7px;color:var(--text3);font-weight:600;letter-spacing:1px;}
+.wr-name{text-align:center;margin-top:8px;font-size:12px;font-weight:700;color:var(--amber);}
+.wr-desc{text-align:center;font-size:9px;color:var(--text3);margin-top:3px;line-height:1.5;max-width:240px;margin-left:auto;margin-right:auto;}
 /* BEAUFORT */
-.bf{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--border);}
-.bf-r{display:flex;align-items:center;padding:5px 0;gap:8px;}.bf-r:not(:last-child){border-bottom:1px solid var(--border);}
-.bf-f{font-size:12px;font-weight:800;min-width:20px;text-align:center;}.bf-kn{font-size:10px;color:var(--text3);min-width:55px;}.bf-desc{font-size:10px;color:var(--text2);flex:1;}
-.bf-tag{font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.3px;white-space:nowrap;}
-.bf-tag.ok{background:rgba(52,211,153,.08);color:var(--green);}.bf-tag.lim{background:rgba(251,191,36,.08);color:var(--amber);}.bf-tag.no{background:rgba(248,113,113,.08);color:var(--red);}
+.bf{background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);}
+.bf-r{display:flex;align-items:center;padding:4px 0;gap:6px;}.bf-r:not(:last-child){border-bottom:1px solid var(--border);}
+.bf-f{font-size:11px;font-weight:800;min-width:18px;text-align:center;}.bf-kn{font-size:9px;color:var(--text3);min-width:50px;}.bf-desc{font-size:9px;color:var(--text2);flex:1;}
+.bf-tag{font-size:7px;font-weight:700;padding:2px 5px;border-radius:3px;white-space:nowrap;}
+.bf-tag.ok{background:rgba(52,211,153,.06);color:var(--green);}.bf-tag.lim{background:rgba(251,191,36,.06);color:var(--amber);}.bf-tag.no{background:rgba(248,113,113,.06);color:var(--red);}
 /* DASHBOARD */
-.dash{background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);margin-bottom:14px;}
-.dash-h{font-size:13px;font-weight:700;margin-bottom:12px;}.dash-r{display:flex;justify-content:space-between;padding:6px 0;}.dash-r:not(:last-child){border-bottom:1px solid var(--border);}
-.dash-l{font-size:11px;color:var(--text3);}.dash-v{font-size:11px;font-weight:700;}
-.dash-bar{height:5px;background:var(--border);border-radius:3px;margin-top:6px;overflow:hidden;}
-.dash-fill{height:100%;border-radius:3px;}.dash-fill.ok{background:var(--green);}.dash-fill.warn{background:var(--amber);}.dash-fill.crit{background:var(--red);}
-/* PUNTA CHIAPPA CURRENT */
-.pc{background:var(--card);border-radius:12px;padding:12px 14px;border:1px solid var(--border);margin-bottom:14px;display:flex;align-items:center;gap:12px;}
-.pc-icon{font-size:22px;}.pc-info{flex:1;}.pc-name{font-size:12px;font-weight:700;}.pc-val{font-size:10px;color:var(--text3);margin-top:2px;}
-.pc-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:6px;}
-.pc-badge.ok{background:var(--gg);color:var(--green);}.pc-badge.warn{background:var(--ag);color:var(--amber);}.pc-badge.danger{background:var(--rg);color:var(--red);}
-footer{padding:16px;text-align:center;max-width:520px;margin:0 auto;font-size:9px;color:var(--text3);line-height:1.7;}
+.dash{background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;}
+.dash-h{font-size:12px;font-weight:700;margin-bottom:10px;}.dash-r{display:flex;justify-content:space-between;padding:5px 0;font-size:10px;}.dash-r:not(:last-child){border-bottom:1px solid var(--border);}
+.dash-l{color:var(--text3);}.dash-v{font-weight:700;}
+.dash-bar{height:4px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden;}
+.dash-fill{height:100%;border-radius:2px;}.dash-fill.ok{background:var(--green);}.dash-fill.warn{background:var(--amber);}.dash-fill.crit{background:var(--red);}
+.sun{display:flex;justify-content:center;gap:20px;padding:6px;font-size:10px;color:var(--text3);}
+footer{padding:14px;text-align:center;max-width:520px;margin:0 auto;font-size:8px;color:var(--text3);line-height:1.7;}
 footer strong{color:var(--text2);}
-.loading{text-align:center;padding:60px 20px;}
-.ld-s{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 12px;}
-.ld-t{font-size:11px;color:var(--text3);}
-.sun{display:flex;justify-content:center;gap:20px;padding:6px;font-size:11px;color:var(--text3);}
+.loading{text-align:center;padding:50px 20px;}
+.ld-s{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 10px;}
+.ld-t{font-size:10px;color:var(--text3);}
+/* 5 TERRE time picker */
+.tp-row{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:10px;padding:10px 12px;border:1px solid var(--border);margin-bottom:12px;}
+.tp-l{font-size:9px;font-weight:700;color:var(--text3);min-width:48px;}.tp-bs{display:flex;gap:4px;}
+.tp-b{width:36px;height:30px;border-radius:6px;border:1px solid var(--border2);background:var(--card2);font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;}
+.tp-b.a{background:var(--gold);color:var(--bg);border-color:var(--gold);}
 </style>
 </head>
 <body>
 <header>
 <div class="hl"><span class="logo">⛵</span><div><h1>MeteoMare</h1><div class="sub">Promontorio di Portofino</div></div></div>
+<div class="hbtns">
+<div class="mode-tog"><button class="mode-btn a" id="mDir" onclick="setMode('dir')">👔 Direttrice</button><button class="mode-btn" id="mCmd" onclick="setMode('cmd')">⚓ Comandante</button></div>
 <button class="bi" onclick="loadData()" id="btnR">↻</button>
+</div>
 </header>
 <div class="rule">Nel dubbio, non si esce.</div>
 <div class="tabs">
 <button class="tb a" onclick="sw('ptf')" id="t1">Promontorio</button>
-<button class="tb" onclick="sw('5t')" id="t2">Rotta 5 Terre</button>
+<button class="tb" onclick="sw('5t')" id="t2">5 Terre</button>
 <button class="tb" onclick="sw('dash')" id="t3">Dashboard</button>
 </div>
 <div id="mapWrap"><div id="map"></div><canvas id="windCanvas"></canvas></div>
 <div class="src-bar" id="srcBar"><span class="sd off"></span>Caricamento...</div>
 <div id="loadV" class="loading"><div class="ld-s"></div><div class="ld-t">Interrogazione modelli...</div></div>
 
-<!-- ============ TAB PROMONTORIO ============ -->
+<!-- ============ PROMONTORIO ============ -->
 <main class="tc a" id="pPtf">
 <div class="st green" id="pSt"><div class="st-i" id="pI">✓</div><div class="st-t" id="pT">ANALISI</div><div class="st-s" id="pS"></div><div class="st-x" id="pX"></div></div>
 <div class="sun" id="pSun"></div>
@@ -156,17 +177,23 @@ footer strong{color:var(--text2);}
 <div class="sec">San Fruttuoso · Risacca banchina</div>
 <div class="sf ok" id="sfC"><div class="sf-h"><div><div class="sf-n">San Fruttuoso</div><div class="sf-l">Banchina Abbazia</div></div><div><div class="sf-v" id="sfV">--</div><div class="sf-dk" id="sfD">--</div></div></div><div class="sf-ms"><div class="sf-m"><div class="sf-mv" id="sfSH">--</div><div class="sf-ml">Swell</div></div><div class="sf-m"><div class="sf-mv" id="sfSP">--</div><div class="sf-ml">Periodo</div></div><div class="sf-m"><div class="sf-mv" id="sfSD">--</div><div class="sf-ml">Dir.</div></div></div><div class="sf-info" id="sfI"></div></div>
 
-<div class="sec">Porto di Portofino · Risacca</div>
-<div class="pr" id="prC"><div class="pr-left"><span class="pr-dot green" id="prDot"></span><span class="pr-name">Porto Portofino</span></div><span class="pr-val" id="prV">--</span></div>
+<div class="sm-row">
+<div class="sm"><span class="sm-icon">🏠</span><div><div class="sm-name">Porto Portofino</div><div class="sm-val" id="prV">--</div></div><span class="sm-badge ok" id="prB">--</span></div>
+<div class="sm"><span class="sm-icon">🌀</span><div><div class="sm-name">P.ta Chiappa</div><div class="sm-val" id="pcV">--</div></div><span class="sm-badge ok" id="pcB">--</span></div>
+</div>
 
-<div class="sec">Correnti · Punta Chiappa</div>
-<div class="pc" id="pcC"><span class="pc-icon">🌀</span><div class="pc-info"><div class="pc-name">Punta Chiappa</div><div class="pc-val" id="pcV">--</div></div><span class="pc-badge ok" id="pcB">--</span></div>
+<div class="sec">Rotta Ovest · San Fruttuoso (~2.5 mn)</div>
+<div class="route-sec" id="rW"></div>
+<div class="sec">Rotta Est · Santa Margherita (~1.5 mn)</div>
+<div class="route-sec" id="rE"></div>
 
-<div class="sec">Rotta Ovest · Portofino → San Fruttuoso</div>
-<div class="route-sec" id="rWest"></div>
-
-<div class="sec">Rotta Est · Portofino → Santa Margherita</div>
-<div class="route-sec" id="rEast"></div>
+<!-- COMANDANTE: Grafici -->
+<div class="cmd">
+<div class="sec">Vento — 24 ore</div>
+<div class="chart-wrap"><canvas id="chWind"></canvas></div>
+<div class="sec">Mare — 24 ore</div>
+<div class="chart-wrap"><canvas id="chSea"></canvas></div>
+</div>
 
 <div class="sec">Rosa dei Venti</div>
 <div class="wr-w"><div class="wr" id="wrR"><div class="wr-ring"></div><div class="wr-arr" id="wrA"></div><div class="wr-c"><span class="wr-sp" id="wrS">--</span><span class="wr-u">KN</span></div></div><div class="wr-name" id="wrN">--</div><div class="wr-desc" id="wrD"></div></div>
@@ -174,274 +201,180 @@ footer strong{color:var(--text2);}
 <div class="sec">Condizioni Portofino</div>
 <div class="mg" id="pM"></div>
 
-<div class="sec">Previsione Oraria</div>
+<div class="sec">Previsione oraria</div>
 <div class="tls"><div class="tl" id="pTL"></div></div>
 
-<div class="sec">Scala Beaufort</div>
-<div class="bf">
+<!-- COMANDANTE: Tabella dati completa -->
+<div class="cmd">
+<div class="sec">Tutti i dati — Portofino (oggi)</div>
+<div class="dtable" id="pTable"></div>
+</div>
+
+<div class="sec cmd">Scala Beaufort</div>
+<div class="bf cmd">
 <div class="bf-r"><div class="bf-f">0–2</div><div class="bf-kn">0–6 kn</div><div class="bf-desc">Calma / bava</div><span class="bf-tag ok">IDEALE</span></div>
-<div class="bf-r"><div class="bf-f">3</div><div class="bf-kn">7–10 kn</div><div class="bf-desc">Brezza tesa</div><span class="bf-tag ok">LIMITE OSPITI</span></div>
-<div class="bf-r"><div class="bf-f">4</div><div class="bf-kn">11–16 kn</div><div class="bf-desc">Vento moderato</div><span class="bf-tag lim">MAX BARCA 7.5m</span></div>
+<div class="bf-r"><div class="bf-f">3</div><div class="bf-kn">7–10 kn</div><div class="bf-desc">Brezza tesa</div><span class="bf-tag ok">MAX OSPITI</span></div>
+<div class="bf-r"><div class="bf-f">4</div><div class="bf-kn">11–16 kn</div><div class="bf-desc">Vento moderato</div><span class="bf-tag lim">MAX 7.5m</span></div>
 <div class="bf-r"><div class="bf-f">5</div><div class="bf-kn">17–21 kn</div><div class="bf-desc">Vento teso</div><span class="bf-tag no">NON SI ESCE</span></div>
-<div class="bf-r"><div class="bf-f">6+</div><div class="bf-kn">22+ kn</div><div class="bf-desc">Vento fresco</div><span class="bf-tag no">PERICOLO</span></div>
+<div class="bf-r"><div class="bf-f">6+</div><div class="bf-kn">22+ kn</div><div class="bf-desc">Vento fresco/forte</div><span class="bf-tag no">PERICOLO</span></div>
 </div>
 </main>
 
-<!-- ============ TAB ROTTA 5 TERRE ============ -->
+<!-- ============ 5 TERRE ============ -->
 <main class="tc" id="p5T">
 <div class="st green" id="rSt"><div class="st-i" id="rI">✓</div><div class="st-t" id="rT">ANALISI</div><div class="st-s" id="rS"></div><div class="st-x" id="rX"></div></div>
 <div class="sec">Partenza</div>
-<div style="background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);margin-bottom:14px;display:flex;align-items:center;gap:10px;">
-<span style="font-size:10px;font-weight:700;color:var(--text3);min-width:48px;">ANDATA</span><div id="tpA" style="display:flex;gap:5px;"></div>
-</div>
+<div class="tp-row"><span class="tp-l">Andata</span><div class="tp-bs" id="tpA"></div></div>
 <div class="sec">Waypoint</div>
 <div class="route-sec" id="r5A"></div>
+<div class="cmd">
+<div class="sec">Vento lungo rotta — 24h</div>
+<div class="chart-wrap"><canvas id="ch5W"></canvas></div>
+</div>
 </main>
 
-<!-- ============ TAB DASHBOARD ============ -->
+<!-- ============ DASHBOARD ============ -->
 <main class="tc" id="pDash">
 <div class="sec">Consumi API</div>
 <div class="dash" id="dU"></div>
+<div class="sec">Storico</div>
+<div class="dash" id="dH"><div class="dash-h">Giorni disponibili</div><div id="dHList" style="font-size:10px;color:var(--text3)">Caricamento...</div></div>
 <div class="sec">Configurazione</div>
-<div class="dash"><div class="dash-h">API Key Stormglass</div><p style="font-size:11px;color:var(--text3);line-height:1.6;">La chiave va nel file <code style="background:var(--card2);padding:2px 6px;border-radius:4px;font-size:10px;color:var(--gold)">.env</code> del server.</p><pre style="background:var(--card2);border-radius:8px;padding:10px;font-size:10px;color:var(--text2);margin-top:8px;overflow-x:auto;border:1px solid var(--border);">STORMGLASS_API_KEY=incolla_qui
+<div class="dash"><div class="dash-h">API Key Stormglass</div><p style="font-size:10px;color:var(--text3);line-height:1.5;">Chiave nel file <code style="background:var(--card2);padding:1px 5px;border-radius:3px;font-size:9px;color:var(--gold)">.env</code> del server.</p><pre style="background:var(--card2);border-radius:6px;padding:8px;font-size:9px;color:var(--text2);margin-top:6px;overflow-x:auto;border:1px solid var(--border);">STORMGLASS_API_KEY=incolla_qui
 STORMGLASS_DAILY_LIMIT=500</pre></div>
 </main>
 
-<footer><strong>Strumento di supporto alla decisione.</strong> La decisione finale spetta SEMPRE al comandante.<br>Nel dubbio, non si esce.</footer>
+<footer><strong>Strumento di supporto alla decisione.</strong> La decisione finale spetta SEMPRE al comandante. Nel dubbio, non si esce.</footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
 // ================================================================
-// CONFIGURAZIONE — PROMONTORIO DI PORTOFINO
-// Coordinate, rotte, soglie, modelli esposizione
+// CONFIG
 // ================================================================
-
-// Punti del promontorio
-const PTS = {
-    portofino:    {lat:44.303, lon:9.210, name:'Portofino Porto'},
-    puntaDelCapo: {lat:44.307, lon:9.202, name:'Punta del Capo'},
-    costaOvest:   {lat:44.313, lon:9.188, name:'Costa Ovest'},
-    sanFruttuoso: {lat:44.319, lon:9.175, name:'San Fruttuoso'},
-    puntaChiappa: {lat:44.335, lon:9.165, name:'Punta Chiappa'},
-    camogli:      {lat:44.349, lon:9.155, name:'Camogli'},
-    paraggi:      {lat:44.310, lon:9.215, name:'Paraggi'},
-    santaMarg:    {lat:44.334, lon:9.211, name:'Santa Margherita'},
+const PTS={
+    portofino:{lat:44.303,lon:9.210,name:'Portofino Porto'},
+    puntaDelCapo:{lat:44.307,lon:9.202,name:'Punta del Capo'},
+    costaOvest:{lat:44.313,lon:9.188,name:'Costa Ovest'},
+    sanFruttuoso:{lat:44.319,lon:9.175,name:'San Fruttuoso'},
+    puntaChiappa:{lat:44.335,lon:9.165,name:'Punta Chiappa'},
+    camogli:{lat:44.349,lon:9.155,name:'Camogli'},
+    paraggi:{lat:44.310,lon:9.215,name:'Paraggi'},
+    santaMarg:{lat:44.334,lon:9.211,name:'Santa Margherita'},
 };
-
-// Rotta OVEST: Portofino → San Fruttuoso (~2.5 mn)
-const ROUTE_W = [
-    {key:'portofino',    name:'Porto Portofino',   exposure:'sheltered', shelterFactor:0.5, desc:'Porto riparato'},
-    {key:'puntaDelCapo', name:'Punta del Capo',    exposure:'full_WSW',  shelterFactor:1.0, desc:'Esposto a Libeccio/Ponente'},
-    {key:'costaOvest',   name:'Costa Ovest',       exposure:'full_WSW',  shelterFactor:1.0, desc:'Massima esposizione SW'},
-    {key:'sanFruttuoso', name:'San Fruttuoso',     exposure:'bay_SSW',   shelterFactor:0.7, desc:'Baia — risacca con swell SSO'},
+const ROUTE_W=[
+    {key:'portofino',name:'Porto Portofino',sf:0.5,exp:'sheltered',desc:'Porto riparato'},
+    {key:'puntaDelCapo',name:'Punta del Capo',sf:1.0,exp:'full_WSW',desc:'Esposto Libeccio'},
+    {key:'costaOvest',name:'Costa Ovest',sf:1.0,exp:'full_WSW',desc:'Max esposizione SW'},
+    {key:'sanFruttuoso',name:'San Fruttuoso',sf:0.7,exp:'bay_SSW',desc:'Baia — risacca SSO'},
 ];
-
-// Rotta EST: Portofino → Santa Margherita (~1.5 mn)
-const ROUTE_E = [
-    {key:'portofino', name:'Porto Portofino',     exposure:'sheltered',       shelterFactor:0.5, desc:'Porto riparato'},
-    {key:'paraggi',   name:'Paraggi',             exposure:'partial_E',       shelterFactor:0.6, desc:'Parzialmente esposto a Levante'},
-    {key:'santaMarg', name:'Santa Margherita L.', exposure:'sheltered_gulf',  shelterFactor:0.3, desc:'Golfo del Tigullio — molto riparato'},
+const ROUTE_E=[
+    {key:'portofino',name:'Porto Portofino',sf:0.5,exp:'sheltered',desc:'Porto riparato'},
+    {key:'paraggi',name:'Paraggi',sf:0.6,exp:'partial_E',desc:'Esposto a Levante'},
+    {key:'santaMarg',name:'Santa Margherita L.',sf:0.3,exp:'sheltered_gulf',desc:'Golfo Tigullio'},
 ];
-
-// Rotta 5 TERRE (barche 10m)
-const ROUTE_5T = [
-    {lat:44.303,lon:9.210,name:'Portofino',nm:0,riparo:'porto',esposto:false},
-    {lat:44.270,lon:9.398,name:'Sestri Levante',nm:10,riparo:'porto',esposto:false},
-    {lat:44.235,lon:9.490,name:'Moneglia',nm:16,riparo:'limitato',esposto:true},
-    {lat:44.170,lon:9.612,name:'Levanto',nm:22,riparo:'porto',esposto:true},
-    {lat:44.145,lon:9.654,name:'Monterosso',nm:25,riparo:'limitato',esposto:false},
-    {lat:44.098,lon:9.738,name:'Riomaggiore',nm:30,riparo:'nessuno',esposto:false},
+const ROUTE_5T=[
+    {lat:44.303,lon:9.210,name:'Portofino',nm:0,riparo:'porto',esp:false},
+    {lat:44.270,lon:9.398,name:'Sestri Levante',nm:10,riparo:'porto',esp:false},
+    {lat:44.235,lon:9.490,name:'Moneglia',nm:16,riparo:'limitato',esp:true},
+    {lat:44.170,lon:9.612,name:'Levanto',nm:22,riparo:'porto',esp:true},
+    {lat:44.145,lon:9.654,name:'Monterosso',nm:25,riparo:'limitato',esp:false},
+    {lat:44.098,lon:9.738,name:'Riomaggiore',nm:30,riparo:'nessuno',esp:false},
 ];
-
-// Soglie
-const S75 = {vento:{v:10,g:16},raffiche:{v:15,g:22},onde:{v:0.5,g:1.0},vis:{v:5000,g:2000}};
-const S10 = {vento:{v:12,g:20},raffiche:{v:18,g:28},onde:{v:0.75,g:1.5},vis:{v:5000,g:2000}};
-
-// Venti italiani
-const VENTI = [
-    {name:'Tramontana',s:'N',deg:0,desc:'Vento da nord. Porto di Portofino riparato. Attenzione nella traversata verso San Fruttuoso: mare formato lungo costa ovest.'},
-    {name:'Grecale',s:'NE',deg:45,desc:'Vento da nord-est. Generalmente gestibile. Leggero disagio a Paraggi.'},
-    {name:'Levante',s:'E',deg:90,desc:'Vento da est. Mare formato lungo tutta la costa est (Paraggi, Santa Margherita). Rotta ovest più favorevole.'},
-    {name:'Scirocco',s:'SE',deg:135,desc:'Vento da sud-est. Porta onde lunghe nel golfo. Risacca possibile nel porto di Portofino.'},
-    {name:'Ostro',s:'S',deg:180,desc:'Vento da sud. Swell diretto verso San Fruttuoso. Risacca probabile in banchina.'},
-    {name:'Libeccio',s:'SO',deg:225,desc:'IL PIÙ PERICOLOSO. Risacca FORTE a San Fruttuoso. Swell entra diretto nella baia. Attracco impossibile con forza 4+.'},
-    {name:'Ponente',s:'O',deg:270,desc:'Vento da ovest. Costa ovest del promontorio esposta. Punta Chiappa: correnti accelerate.'},
-    {name:'Maestrale',s:'NO',deg:315,desc:'Vento da nord-ovest. Rafficato scendendo dai monti. Punta Chiappa pericolosa.'},
+const S75={vento:{v:10,g:16},raffiche:{v:15,g:22},onde:{v:0.5,g:1},vis:{v:5000,g:2000}};
+const S10={vento:{v:12,g:20},raffiche:{v:18,g:28},onde:{v:0.75,g:1.5},vis:{v:5000,g:2000}};
+const VENTI=[
+    {name:'Tramontana',s:'N',deg:0,desc:'Da nord. Portofino riparato. Attenzione costa ovest.'},
+    {name:'Grecale',s:'NE',deg:45,desc:'Da nord-est. Generalmente gestibile.'},
+    {name:'Levante',s:'E',deg:90,desc:'Da est. Mare formato costa est. Rotta ovest favorevole.'},
+    {name:'Scirocco',s:'SE',deg:135,desc:'Da sud-est. Onde nel golfo. Risacca possibile in porto.'},
+    {name:'Ostro',s:'S',deg:180,desc:'Da sud. Swell diretto a San Fruttuoso.'},
+    {name:'Libeccio',s:'SO',deg:225,desc:'IL PIÙ PERICOLOSO. Risacca forte a San Fruttuoso.'},
+    {name:'Ponente',s:'O',deg:270,desc:'Da ovest. Costa ovest esposta. Correnti a Punta Chiappa.'},
+    {name:'Maestrale',s:'NO',deg:315,desc:'Da nord-ovest. Rafficato. Punta Chiappa pericolosa.'},
 ];
-
-const WD={0:'Sereno',1:'Prev. sereno',2:'Parz. nuvoloso',3:'Coperto',45:'Nebbia',51:'Pioviggine',61:'Pioggia leggera',63:'Pioggia moderata',65:'Pioggia forte',80:'Rovesci',82:'Rovesci violenti',95:'Temporale',96:'Temporale grandine',99:'Temporale forte'};
+const WD={0:'Sereno',1:'Prev. sereno',2:'Parz. nuvoloso',3:'Coperto',45:'Nebbia',51:'Pioviggine',61:'Pioggia legg.',63:'Pioggia mod.',65:'Pioggia forte',80:'Rovesci',82:'Rovesci viol.',95:'Temporale',96:'Temp. grandine',99:'Temp. forte'};
 const WE={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',51:'🌦️',61:'🌧️',63:'🌧️',65:'🌧️',80:'🌦️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
-
-let APP={data:null,usage:null}, timer=null, RS={dep:8};
+let APP={data:null,usage:null},timer=null,RS={dep:8};
 const REFRESH=15*60*1000;
 const $=id=>document.getElementById(id);
-
-// ================================================================
-// HELPERS
-// ================================================================
-const todayS=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
-const tmwS=()=>{const d=new Date();d.setDate(d.getDate()+1);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
-const nowH=()=>new Date().getHours();
 const p2=n=>String(n).padStart(2,'0');
+const nowH=()=>new Date().getHours();
+const todayS=()=>{const d=new Date();return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;};
+const tmwS=()=>{const d=new Date();d.setDate(d.getDate()+1);return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;};
 const hhmm=iso=>{const d=new Date(iso);return`${p2(d.getHours())}:${p2(d.getMinutes())}`;};
 const sC=l=>['green','amber','red'][l]||'red';
 const sL=l=>['SI PUÒ USCIRE','CON CAUTELA','NON SI ESCE'][l];
 const sI=l=>['✓','◐','✕'][l];
 const compass=d=>['N','NE','E','SE','S','SO','O','NO'][Math.round(d/45)%8];
 const arrow=d=>['↓','↙','←','↖','↑','↗','→','↘'][Math.round(d/45)%8];
-function windName(deg){let best=VENTI[0],min=360;for(const v of VENTI){let diff=Math.abs(deg-v.deg);if(diff>180)diff=360-diff;if(diff<min){min=diff;best=v;}}return best;}
+function windName(deg){let b=VENTI[0],m=360;for(const v of VENTI){let d=Math.abs(deg-v.deg);if(d>180)d=360-d;if(d<m){m=d;b=v;}}return b;}
 function evCode(c){if(c<=3)return 0;if([65,82,95,96,99].includes(c))return 2;return 1;}
+
+// ================================================================
+// MODE: Direttrice / Comandante
+// ================================================================
+let mode = localStorage.getItem('mm_mode') || 'dir';
+function setMode(m){mode=m;localStorage.setItem('mm_mode',m);
+document.body.classList.toggle('dir',m==='dir');
+$('mDir').classList.toggle('a',m==='dir');$('mCmd').classList.toggle('a',m==='cmd');
+if(m==='cmd'&&APP.data)renderCharts();}
+setMode(mode);
 
 // ================================================================
 // MAP + WIND CANVAS
 // ================================================================
 const map=L.map('map',{center:[44.318,9.190],zoom:14,zoomControl:false,attributionControl:false});
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(map);
-
-const canvas=document.getElementById('windCanvas');
-const ctx=canvas.getContext('2d');
-let mapLayers=[], windField=[], animId=null;
-
-function resizeCanvas(){canvas.width=canvas.offsetWidth*window.devicePixelRatio;canvas.height=canvas.offsetHeight*window.devicePixelRatio;ctx.scale(window.devicePixelRatio,window.devicePixelRatio);}
-resizeCanvas();
-window.addEventListener('resize',resizeCanvas);
-map.on('move zoom',()=>{drawWindField();});
-
+const canvas=$('windCanvas'),ctx=canvas.getContext('2d');
+let mapLayers=[],windField=[],animId=null;
+function resizeCanvas(){canvas.width=canvas.offsetWidth*(window.devicePixelRatio||1);canvas.height=canvas.offsetHeight*(window.devicePixelRatio||1);ctx.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);}
+resizeCanvas();window.addEventListener('resize',resizeCanvas);map.on('move zoom',drawWF);
 function clearLayers(){mapLayers.forEach(l=>map.removeLayer(l));mapLayers=[];}
-
-// Draw wind arrows on canvas
-function drawWindField(){
-    ctx.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight);
-    for(const p of windField){
-        const px=map.latLngToContainerPoint([p.lat,p.lon]);
-        drawArrow(ctx,px.x,px.y,p.speed,p.dir,p.speed>16?'#F87171':p.speed>10?'#FBBF24':'#34D399');
-    }
-}
-
-function drawArrow(ctx,x,y,speed,dir,color){
-    const len=Math.min(8+speed*1.2,28);
-    const rad=(dir)*Math.PI/180;
-    ctx.save();
-    ctx.translate(x,y);
-    ctx.rotate(rad);
-    ctx.globalAlpha=0.7;
-    // Shaft
-    ctx.beginPath();ctx.moveTo(0,-len/2);ctx.lineTo(0,len/2);
-    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineCap='round';ctx.stroke();
-    // Head
-    ctx.beginPath();ctx.moveTo(0,-len/2);ctx.lineTo(-4,-len/2+8);ctx.lineTo(4,-len/2+8);ctx.closePath();
-    ctx.fillStyle=color;ctx.fill();
-    ctx.restore();
-}
-
-// Animate wind (subtle pulse)
 let pulse=0;
-function animateWind(){
-    pulse=(pulse+0.02)%Math.PI;
-    ctx.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight);
-    const alpha=0.5+0.2*Math.sin(pulse*2);
-    for(const p of windField){
-        const px=map.latLngToContainerPoint([p.lat,p.lon]);
-        const color=p.speed>16?'#F87171':p.speed>10?'#FBBF24':'#34D399';
-        const len=Math.min(8+p.speed*1.2,28);
-        const rad=p.dir*Math.PI/180;
-        ctx.save();ctx.translate(px.x,px.y);ctx.rotate(rad);
-        ctx.globalAlpha=alpha;
-        ctx.beginPath();ctx.moveTo(0,-len/2);ctx.lineTo(0,len/2);ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineCap='round';ctx.stroke();
-        ctx.beginPath();ctx.moveTo(0,-len/2);ctx.lineTo(-4,-len/2+8);ctx.lineTo(4,-len/2+8);ctx.closePath();ctx.fillStyle=color;ctx.fill();
-        ctx.restore();
-    }
-    animId=requestAnimationFrame(animateWind);
-}
-
-function startWindAnim(){if(!animId)animId=requestAnimationFrame(animateWind);}
-function stopWindAnim(){if(animId){cancelAnimationFrame(animId);animId=null;}}
-
-// Risacca zone polygons on map
-function drawRisaccaZones(sfRisk, ptfRisk){
-    // San Fruttuoso dock zone
-    const sfColor = sfRisk>=2?'#F87171':sfRisk===1?'#FBBF24':'#34D399';
-    const sfPoly = L.circle([44.319,9.175],{radius:80,color:sfColor,fillColor:sfColor,fillOpacity:sfRisk>=2?0.25:0.1,weight:1,opacity:0.5}).addTo(map);
-    mapLayers.push(sfPoly);
-    // Portofino harbor zone
-    const ptfColor = ptfRisk>=2?'#F87171':ptfRisk===1?'#FBBF24':'#34D399';
-    const ptfPoly = L.circle([44.303,9.210],{radius:60,color:ptfColor,fillColor:ptfColor,fillOpacity:ptfRisk>=1?0.15:0.05,weight:1,opacity:0.4}).addTo(map);
-    mapLayers.push(ptfPoly);
-}
-
-// Point markers
-function drawPromontorioMarkers(){
-    Object.values(PTS).forEach(p=>{
-        const m=L.circleMarker([p.lat,p.lon],{radius:4,color:'#D4A853',fillColor:'#D4A853',fillOpacity:0.7,weight:1,opacity:0.4}).addTo(map);
-        m.bindPopup(`<strong>${p.name}</strong>`);
-        mapLayers.push(m);
-    });
-    // Route lines
-    const westPath=ROUTE_W.map(r=>PTS[r.key]).map(p=>[p.lat,p.lon]);
-    const eastPath=ROUTE_E.map(r=>PTS[r.key]).map(p=>[p.lat,p.lon]);
-    mapLayers.push(L.polyline(westPath,{color:'#D4A853',weight:2,opacity:0.4,dashArray:'5,5'}).addTo(map));
-    mapLayers.push(L.polyline(eastPath,{color:'#60A5FA',weight:2,opacity:0.4,dashArray:'5,5'}).addTo(map));
+function animWF(){pulse=(pulse+0.015)%Math.PI;ctx.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight);const a=0.5+0.2*Math.sin(pulse*2);
+for(const p of windField){const px=map.latLngToContainerPoint([p.lat,p.lon]);const color=p.speed>16?'#F87171':p.speed>10?'#FBBF24':'#34D399';const len=Math.min(8+p.speed*1.2,28);const rad=p.dir*Math.PI/180;
+ctx.save();ctx.translate(px.x,px.y);ctx.rotate(rad);ctx.globalAlpha=a;ctx.beginPath();ctx.moveTo(0,-len/2);ctx.lineTo(0,len/2);ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineCap='round';ctx.stroke();
+ctx.beginPath();ctx.moveTo(0,-len/2);ctx.lineTo(-4,-len/2+8);ctx.lineTo(4,-len/2+8);ctx.closePath();ctx.fillStyle=color;ctx.fill();ctx.restore();}
+animId=requestAnimationFrame(animWF);}
+function drawWF(){if(animId)return;animWF();}
+function startWF(){if(!animId)animId=requestAnimationFrame(animWF);}
+function drawMapPtf(sfRisk,prRisk){
+    clearLayers();
+    Object.values(PTS).forEach(p=>{const m=L.circleMarker([p.lat,p.lon],{radius:4,color:'#D4A853',fillColor:'#D4A853',fillOpacity:.7,weight:1,opacity:.4}).addTo(map);m.bindPopup(`<strong>${p.name}</strong>`);mapLayers.push(m);});
+    mapLayers.push(L.polyline(ROUTE_W.map(r=>[PTS[r.key].lat,PTS[r.key].lon]),{color:'#D4A853',weight:2,opacity:.4,dashArray:'5,5'}).addTo(map));
+    mapLayers.push(L.polyline(ROUTE_E.map(r=>[PTS[r.key].lat,PTS[r.key].lon]),{color:'#60A5FA',weight:2,opacity:.4,dashArray:'5,5'}).addTo(map));
+    const sfCol=sfRisk>=2?'#F87171':sfRisk===1?'#FBBF24':'#34D399';
+    mapLayers.push(L.circle([PTS.sanFruttuoso.lat,PTS.sanFruttuoso.lon],{radius:80,color:sfCol,fillColor:sfCol,fillOpacity:sfRisk>=2?.25:.08,weight:1,opacity:.5}).addTo(map));
+    const prCol=prRisk>=2?'#F87171':prRisk===1?'#FBBF24':'#34D399';
+    mapLayers.push(L.circle([PTS.portofino.lat,PTS.portofino.lon],{radius:60,color:prCol,fillColor:prCol,fillOpacity:prRisk>=1?.15:.05,weight:1,opacity:.4}).addTo(map));
 }
 
 // ================================================================
 // API
 // ================================================================
-async function fetchBatchWeather(points){
-    const r=await fetch('/api/batch-weather?points='+encodeURIComponent(JSON.stringify(points)));
-    if(!r.ok)throw new Error('weather');return r.json();
-}
-async function fetchBatchMarine(points){
-    const r=await fetch('/api/batch-marine?points='+encodeURIComponent(JSON.stringify(points)));
-    if(!r.ok)throw new Error('marine');return r.json();
-}
-async function fetchUsage(){try{const r=await fetch('/api/usage');return r.json();}catch{return null;}}
+async function fetchBW(pts){const r=await fetch('/api/batch-weather?points='+encodeURIComponent(JSON.stringify(pts)));if(!r.ok)throw 0;return r.json();}
+async function fetchBM(pts){const r=await fetch('/api/batch-marine?points='+encodeURIComponent(JSON.stringify(pts)));if(!r.ok)throw 0;return r.json();}
+async function fetchUsage(){try{return(await fetch('/api/usage')).json();}catch{return null;}}
+async function fetchHistoryDates(){try{return(await fetch('/api/history/dates')).json();}catch{return{dates:[]};}}
 
-// Normalize batch response (Open-Meteo returns array for multi-point)
-function normBatch(wBatch, mBatch, points){
-    const today=todayS(),tmw=tmwS();
-    const result={};
-    // Open-Meteo batch: if single point, hourly is direct; if multi, it's array
-    const isMulti = Array.isArray(wBatch.hourly?.time?.[0]) || wBatch.latitude !== undefined && Array.isArray(wBatch.latitude);
-
-    points.forEach((pt,idx)=>{
-        const key=`${pt.lat}_${pt.lon}`;
-        const tH={},mH={};
-
-        // Get hourly for this index
-        let wH, mHr, times;
-        if(wBatch.length){
-            // Array of results
-            wH=wBatch[idx]?.hourly;times=wH?.time||[];
-        } else if(Array.isArray(wBatch.hourly)){
-            // Multi-location: hourly is array of hourly objects
-            wH=wBatch.hourly[idx];times=wH?.time||[];
-        } else {
-            // Single location or flat structure
-            wH=wBatch.hourly;times=wH?.time||[];
-        }
-
-        let mHourly=null;
-        if(mBatch){
-            if(mBatch.length) mHourly=mBatch[idx]?.hourly;
-            else if(Array.isArray(mBatch.hourly)) mHourly=mBatch.hourly[idx];
-            else mHourly=mBatch.hourly;
-        }
-
-        (times||[]).forEach((t,i)=>{
-            const ds=t.substring(0,10),h=parseInt(t.substring(11,13)),code=wH.weather_code?.[i]||0;
-            const e={
-                wind:wH.wind_speed_10m?.[i]||0,gusts:wH.wind_gusts_10m?.[i]||0,
-                windDir:wH.wind_direction_10m?.[i]||0,vis:wH.visibility?.[i]||50000,
-                temp:wH.temperature_2m?.[i]||0,precip:wH.precipitation?.[i]||0,
-                code,emoji:WE[code]||'🌤️',desc:WD[code]||'',severity:evCode(code),
-                waves:mHourly?.wave_height?.[i]??null,wavePer:mHourly?.wave_period?.[i]??null,waveDir:mHourly?.wave_direction?.[i]??null,
-                swellH:mHourly?.swell_wave_height?.[i]??null,swellP:mHourly?.swell_wave_period?.[i]??null,swellD:mHourly?.swell_wave_direction?.[i]??null,
-            };
-            if(ds===today)tH[h]=e;else if(ds===tmw)mH[h]=e;
-        });
-        result[key]={tH,mH,daily:wBatch.daily||wBatch[idx]?.daily||null};
-    });
-    return result;
+function normBatch(wB,mB,pts){
+    const today=todayS(),tmw=tmwS(),result={};
+    pts.forEach((pt,idx)=>{
+        const key=`${pt.lat}_${pt.lon}`;const tH={},mH={};
+        let wH=Array.isArray(wB)?wB[idx]?.hourly:wB.hourly;
+        let mHr=mB?(Array.isArray(mB)?mB[idx]?.hourly:mB.hourly):null;
+        let daily=Array.isArray(wB)?wB[idx]?.daily:wB.daily;
+        // Handle multi-point: Open-Meteo returns array of hourly objects
+        if(wB.hourly&&Array.isArray(wB.hourly)&&wB.hourly[0]?.time)wH=idx===0?wB.hourly:wB.hourly;
+        if(!wH?.time)return;
+        const times=wH.time||[];
+        times.forEach((t,i)=>{const ds=t.substring(0,10),h=parseInt(t.substring(11,13)),code=wH.weather_code?.[i]||0;
+        const e={wind:wH.wind_speed_10m?.[i]||0,gusts:wH.wind_gusts_10m?.[i]||0,windDir:wH.wind_direction_10m?.[i]||0,vis:wH.visibility?.[i]||50000,temp:wH.temperature_2m?.[i]||0,precip:wH.precipitation?.[i]||0,code,emoji:WE[code]||'🌤️',desc:WD[code]||'',severity:evCode(code),
+        waves:mHr?.wave_height?.[i]??null,wavePer:mHr?.wave_period?.[i]??null,waveDir:mHr?.wave_direction?.[i]??null,swellH:mHr?.swell_wave_height?.[i]??null,swellP:mHr?.swell_wave_period?.[i]??null,swellD:mHr?.swell_wave_direction?.[i]??null};
+        if(ds===today)tH[h]=e;else if(ds===tmw)mH[h]=e;});
+        result[key]={tH,mH,daily};
+    });return result;
 }
 
 // ================================================================
@@ -450,241 +383,219 @@ function normBatch(wBatch, mBatch, points){
 function eU(v,t){return v<=t.v?0:v<=t.g?1:2;}
 function eD(v,t){return v>=t.v?0:v>=t.g?1:2;}
 function evH(d,s){if(!d)return{ov:-1,sc:{}};const sc={vento:eU(d.wind,s.vento),raffiche:eU(d.gusts,s.raffiche),vis:eD(d.vis,s.vis),meteo:d.severity||0};if(d.waves!=null)sc.onde=eU(d.waves,s.onde);return{ov:Math.max(...Object.values(sc)),sc};}
-
-// Exposure-aware: modify wind based on shelter factor and wind direction
-function applyExposure(d, wp){
-    if(!d) return d;
-    const mod={...d};
-    const dir=d.windDir;
-    let factor=wp.shelterFactor||1.0;
-    // Directional exposure
-    if(wp.exposure==='full_WSW'){
-        // Only exposed to W-SW winds (200-290 degrees)
-        if(dir<200||dir>290) factor*=0.6;
-    } else if(wp.exposure==='bay_SSW'){
-        if(dir<160||dir>250) factor*=0.5;
-    } else if(wp.exposure==='partial_E'){
-        if(dir<60||dir>150) factor*=0.5;
-    } else if(wp.exposure==='sheltered_gulf'){
-        if(dir>180&&dir<360) factor*=0.3; // Very sheltered from W/NW/N
-    }
-    mod.wind=d.wind*factor;
-    mod.gusts=d.gusts*factor;
-    if(d.waves!=null) mod.waves=d.waves*factor;
-    return mod;
-}
-
-// SAN FRUTTUOSO RISACCA
+function applyExp(d,wp){if(!d)return d;const m={...d};let f=wp.sf||1;const dir=d.windDir;
+if(wp.exp==='full_WSW'){if(dir<200||dir>290)f*=.6;}
+else if(wp.exp==='bay_SSW'){if(dir<160||dir>250)f*=.5;}
+else if(wp.exp==='partial_E'){if(dir<60||dir>150)f*=.5;}
+else if(wp.exp==='sheltered_gulf'){if(dir>180)f*=.3;}
+m.wind=d.wind*f;m.gusts=d.gusts*f;if(d.waves!=null)m.waves=d.waves*f;return m;}
 function calcRisacca(d){
-    if(!d||d.swellH==null||d.swellD==null)return{risk:0,label:'N/D',dock:'Dati swell non disponibili',detail:'',swellH:null,swellP:null,swellD:null};
-    const bayFace=200;
-    let diff=Math.abs(d.swellD-bayFace);if(diff>180)diff=360-diff;
-    const direct=diff<40,partial=diff<70;
-    const period=d.swellP||0,height=d.swellH||0;
-    const windInto=d.windDir!=null&&Math.abs(d.windDir-bayFace)<60&&d.wind>8;
-    let risk=0;
-    if(direct){if(period>8||height>0.5)risk=3;else if(period>6||height>0.3)risk=2;else risk=1;}
-    else if(partial){if(period>10||height>0.8)risk=2;else if(period>7)risk=1;}
+    if(!d||d.swellH==null||d.swellD==null)return{risk:0,label:'N/D',dock:'Dati non disp.',detail:'',swellH:null,swellP:null,swellD:null};
+    let diff=Math.abs(d.swellD-200);if(diff>180)diff=360-diff;
+    const direct=diff<40,partial=diff<70,period=d.swellP||0,height=d.swellH||0;
+    const windInto=d.windDir!=null&&Math.abs(d.windDir-200)<60&&d.wind>8;
+    let risk=0;if(direct){if(period>8||height>.5)risk=3;else if(period>6||height>.3)risk=2;else risk=1;}else if(partial){if(period>10||height>.8)risk=2;else if(period>7)risk=1;}
     if(windInto&&risk<3)risk=Math.min(risk+1,3);
-    const labels=['NESSUNA','LEGGERA','MODERATA','FORTE'];
-    const docks=['Attracco agevole','Attracco con attenzione','Attracco difficile','NON ATTRACCARE'];
-    let detail='';
-    if(risk>=2){const wn=windName(d.swellD);detail=`Swell da ${wn.name} (${d.swellD.toFixed(0)}°) entra nella baia.`;if(period>7)detail+=` Periodo lungo (${period.toFixed(0)}s) amplifica la risacca.`;if(windInto)detail+=` Vento aggrava la situazione.`;}
-    else if(risk===1)detail='Leggero moto ondoso in banchina. Prudenza nell\'ormeggio.';
-    else detail='Baia calma. Attracco agevole.';
-    return{risk,label:labels[risk],dock:docks[risk],detail,swellH:height,swellP:period,swellD:d.swellD};
-}
-
-// PORTO PORTOFINO RISACCA (oriented ~120° ESE)
-function calcRisaccaPorto(d){
-    if(!d||d.swellH==null||d.swellD==null)return{risk:0,label:'Calmo'};
-    const face=120;let diff=Math.abs(d.swellD-face);if(diff>180)diff=360-diff;
-    const direct=diff<50;
-    const height=d.swellH||0,period=d.swellP||0;
-    let risk=0;
-    if(direct){if(height>0.6||period>9)risk=2;else if(height>0.3||period>7)risk=1;}
-    const labels=['Calmo','Risacca leggera','Risacca in porto'];
-    return{risk,label:labels[risk]};
-}
-
-// PUNTA CHIAPPA CORRENTI (parametric model)
-function calcCurrentPC(d){
-    if(!d)return{speed:0,danger:false,desc:'N/D'};
-    const dir=d.windDir,speed=d.wind;
-    const isWesterly=dir>=200&&dir<=310;
-    const factor=isWesterly?1.0:0.3;
-    const est=speed*0.03*factor+0.2;
-    const danger=est>0.8;
-    let desc=danger?`~${est.toFixed(1)} kn — ATTENZIONE`:`~${est.toFixed(1)} kn — gestibile`;
-    return{speed:est,danger,desc};
-}
+    const labels=['NESSUNA','LEGGERA','MODERATA','FORTE'],docks=['Attracco agevole','Attracco con attenzione','Attracco difficile','NON ATTRACCARE'];
+    let det='';if(risk>=2){const wn=windName(d.swellD);det=`Swell da ${wn.name} (${d.swellD.toFixed(0)}°) entra nella baia.`;if(period>7)det+=` Periodo lungo (${period.toFixed(0)}s) amplifica risacca.`;if(windInto)det+=` Vento aggrava.`;}
+    else if(risk===1)det='Leggero moto ondoso. Prudenza.';else det='Baia calma.';
+    return{risk,label:labels[risk],dock:docks[risk],detail:det,swellH:height,swellP:period,swellD:d.swellD};}
+function calcRisaccaPtf(d){if(!d||d.swellH==null||d.swellD==null)return{risk:0,label:'Calmo'};let diff=Math.abs(d.swellD-120);if(diff>180)diff=360-diff;let risk=0;if(diff<50){if(d.swellH>.6||(d.swellP||0)>9)risk=2;else if(d.swellH>.3||(d.swellP||0)>7)risk=1;}return{risk,label:['Calmo','Risacca leggera','Risacca'][risk]};}
+function calcPC(d){if(!d)return{speed:0,danger:false,desc:'N/D'};const isW=d.windDir>=200&&d.windDir<=310;const est=d.wind*.03*(isW?1:.3)+.2;return{speed:est,danger:est>.8,desc:est>.8?`~${est.toFixed(1)} kn — ATTENZIONE`:`~${est.toFixed(1)} kn`};}
 
 // ================================================================
-// RENDER
+// CHARTS (Chart.js)
 // ================================================================
-function renderAll(data){
-    const allPts=Object.values(PTS);
-    const h=nowH();
+let chartWind=null,chartSea=null,chart5W=null;
+const chartDark={color:'#94A3B8',borderColor:'rgba(255,255,255,.06)'};
 
-    // Get Portofino and San Fruttuoso data
+// Custom plugin: threshold bands
+const bandPlugin={id:'bands',beforeDraw(chart){
+    const{ctx,chartArea:{left,right,top,bottom},scales:{y}}=chart;
+    const bands=chart.options.plugins.bands;if(!bands)return;
+    bands.forEach(b=>{
+        const yTop=y.getPixelForValue(b.max);const yBot=y.getPixelForValue(b.min);
+        ctx.fillStyle=b.color;ctx.fillRect(left,Math.max(yTop,top),right-left,Math.min(yBot,bottom)-Math.max(yTop,top));
+    });
+}};
+Chart.register(bandPlugin);
+
+function makeWindChart(canvasId, hours, data, soglie){
+    const labels=hours.map(h=>p2(h)+':00');
+    const windData=hours.map(h=>data[h]?.wind??null);
+    const gustData=hours.map(h=>data[h]?.gusts??null);
+    const config={type:'line',data:{labels,datasets:[
+        {label:'Vento (kn)',data:windData,borderColor:'#FBBF24',backgroundColor:'rgba(251,191,36,.1)',fill:true,tension:.3,pointRadius:2,borderWidth:2},
+        {label:'Raffiche (kn)',data:gustData,borderColor:'#F87171',borderDash:[4,3],tension:.3,pointRadius:0,borderWidth:1.5},
+    ]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
+    plugins:{legend:{display:true,labels:{color:'#94A3B8',font:{size:9,family:'Inter'},boxWidth:12,padding:8}},
+    tooltip:{backgroundColor:'#1A2332',titleColor:'#F1F5F9',bodyColor:'#94A3B8',borderColor:'rgba(255,255,255,.1)',borderWidth:1,titleFont:{size:10,family:'Inter'},bodyFont:{size:10,family:'Inter'},padding:8},
+    bands:[{min:0,max:soglie.vento.v,color:'rgba(52,211,153,.04)'},{min:soglie.vento.v,max:soglie.vento.g,color:'rgba(251,191,36,.04)'},{min:soglie.vento.g,max:50,color:'rgba(248,113,113,.04)'}]},
+    scales:{x:{ticks:{color:'#64748B',font:{size:8,family:'Inter'},maxRotation:0},grid:{color:'rgba(255,255,255,.03)'}},
+    y:{beginAtZero:true,ticks:{color:'#64748B',font:{size:8,family:'Inter'}},grid:{color:'rgba(255,255,255,.03)'}}}}};
+    return config;
+}
+
+function makeSeaChart(canvasId, hours, data){
+    const labels=hours.map(h=>p2(h)+':00');
+    const waveData=hours.map(h=>data[h]?.waves??null);
+    const swellData=hours.map(h=>data[h]?.swellH??null);
+    const periodData=hours.map(h=>data[h]?.swellP??null);
+    const config={type:'line',data:{labels,datasets:[
+        {label:'Onde (m)',data:waveData,borderColor:'#60A5FA',backgroundColor:'rgba(96,165,250,.1)',fill:true,tension:.3,pointRadius:2,borderWidth:2},
+        {label:'Swell (m)',data:swellData,borderColor:'#A78BFA',tension:.3,pointRadius:0,borderWidth:1.5},
+        {label:'Periodo swell (s)',data:periodData,borderColor:'#34D399',borderDash:[3,3],tension:.3,pointRadius:0,borderWidth:1,yAxisID:'y1'},
+    ]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
+    plugins:{legend:{display:true,labels:{color:'#94A3B8',font:{size:9,family:'Inter'},boxWidth:12,padding:8}},
+    tooltip:{backgroundColor:'#1A2332',titleColor:'#F1F5F9',bodyColor:'#94A3B8',borderColor:'rgba(255,255,255,.1)',borderWidth:1,titleFont:{size:10,family:'Inter'},bodyFont:{size:10,family:'Inter'},padding:8}},
+    scales:{x:{ticks:{color:'#64748B',font:{size:8,family:'Inter'},maxRotation:0},grid:{color:'rgba(255,255,255,.03)'}},
+    y:{beginAtZero:true,title:{display:true,text:'m',color:'#64748B',font:{size:8}},ticks:{color:'#64748B',font:{size:8}},grid:{color:'rgba(255,255,255,.03)'}},
+    y1:{position:'right',beginAtZero:true,title:{display:true,text:'s',color:'#64748B',font:{size:8}},ticks:{color:'#64748B',font:{size:8}},grid:{display:false}}}}};
+    return config;
+}
+
+function renderCharts(){
+    if(!APP.data)return;
     const ptfKey=`${PTS.portofino.lat}_${PTS.portofino.lon}`;
-    const sfKey=`${PTS.sanFruttuoso.lat}_${PTS.sanFruttuoso.lon}`;
-    const ptfD=data[ptfKey]?.tH?.[h];
-    const sfD=data[sfKey]?.tH?.[h];
+    const ptfAll=APP.data[ptfKey]?.tH||{};
+    const hours=[];for(let h=0;h<=23;h++)if(ptfAll[h])hours.push(h);
+    if(!hours.length)return;
 
+    // Wind chart
+    if(chartWind)chartWind.destroy();
+    chartWind=new Chart($('chWind'),makeWindChart('chWind',hours,ptfAll,S75));
+    // Sea chart
+    if(chartSea)chartSea.destroy();
+    chartSea=new Chart($('chSea'),makeSeaChart('chSea',hours,ptfAll));
+}
+
+// ================================================================
+// DATA TABLE
+// ================================================================
+function renderTable(data){
+    const ptfKey=`${PTS.portofino.lat}_${PTS.portofino.lon}`;
+    const ptfAll=data[ptfKey]?.tH||{};
+    const h=nowH();
+    let html='<table><thead><tr><th>Ora</th><th>Vento</th><th>Raff.</th><th>Dir.</th><th>Onde</th><th>Swell</th><th>Per.</th><th>Dir.Sw</th><th>Vis.</th><th>Temp</th><th>Precip</th></tr></thead><tbody>';
+    for(let i=0;i<=23;i++){
+        const d=ptfAll[i];if(!d)continue;
+        const isNow=i===h;
+        html+=`<tr class="${isNow?'now-row':''}"><td>${p2(i)}:00</td><td>${d.wind.toFixed(1)}</td><td>${d.gusts.toFixed(1)}</td><td>${compass(d.windDir)} ${d.windDir.toFixed(0)}°</td><td>${d.waves!=null?d.waves.toFixed(2):'--'}</td><td>${d.swellH!=null?d.swellH.toFixed(2):'--'}</td><td>${d.swellP!=null?d.swellP.toFixed(1):'--'}</td><td>${d.swellD!=null?compass(d.swellD)+' '+d.swellD.toFixed(0)+'°':'--'}</td><td>${(d.vis/1000).toFixed(1)}km</td><td>${d.temp.toFixed(1)}°</td><td>${d.precip.toFixed(1)}</td></tr>`;
+    }
+    html+='</tbody></table>';
+    $('pTable').innerHTML=html;
+}
+
+// ================================================================
+// RENDER: PROMONTORIO
+// ================================================================
+function renderPtf(data){
+    const h=nowH();
+    const ptfKey=`${PTS.portofino.lat}_${PTS.portofino.lon}`,sfKey=`${PTS.sanFruttuoso.lat}_${PTS.sanFruttuoso.lon}`;
+    const ptfD=data[ptfKey]?.tH?.[h],sfD=data[sfKey]?.tH?.[h]||ptfD;
     if(!ptfD){$('pT').textContent='DATI NON DISPONIBILI';return;}
-
-    // Overall status for Promontorio (7.5m boat)
-    const ev=evH(ptfD,S75);
-    const card=$('pSt');card.className='st '+sC(ev.ov);
+    const ev=evH(ptfD,S75);const card=$('pSt');card.className='st '+sC(ev.ov);
     $('pI').textContent=sI(ev.ov);$('pT').textContent=sL(ev.ov);
-    let reasons=[];
-    if(ev.sc.vento>=1)reasons.push(`Vento ${ptfD.wind.toFixed(0)} kn`);
-    if(ev.sc.raffiche>=1)reasons.push(`Raffiche ${ptfD.gusts.toFixed(0)} kn`);
-    if((ev.sc.onde||0)>=1&&ptfD.waves!=null)reasons.push(`Onde ${ptfD.waves.toFixed(1)}m`);
-    $('pS').textContent=ev.ov===0?'Condizioni ottime per uscire.':reasons.join('. ')+(ev.ov===2?'. Non si esce.':'. Consultare Huma.');
+    let why=[];if(ev.sc.vento>=1)why.push(`Vento ${ptfD.wind.toFixed(0)} kn`);if(ev.sc.raffiche>=1)why.push(`Raffiche ${ptfD.gusts.toFixed(0)} kn`);if((ev.sc.onde||0)>=1&&ptfD.waves!=null)why.push(`Onde ${ptfD.waves.toFixed(1)}m`);
+    $('pS').textContent=ev.ov===0?'Condizioni ottime.':why.join('. ')+(ev.ov>=2?'. Non si esce.':'. Consultare Huma.');
     $('pX').textContent='';
-
-    // Sunrise
     const daily=data[ptfKey]?.daily;
     if(daily?.sunrise?.[0])$('pSun').innerHTML=`<span>🌅 ${hhmm(daily.sunrise[0])}</span><span>🌇 ${hhmm(daily.sunset[0])}</span>`;
 
-    // SAN FRUTTUOSO RISACCA
-    const sfR=calcRisacca(sfD||ptfD);
-    const sfCls=sfR.risk>=2?'bad':sfR.risk===1?'mod':'ok';
+    // SAN FRUTTUOSO
+    const sfR=calcRisacca(sfD);const sfCls=sfR.risk>=2?'bad':sfR.risk===1?'mod':'ok';
     $('sfC').className='sf '+sfCls;$('sfV').textContent=sfR.label;$('sfD').textContent=sfR.dock;
     $('sfSH').textContent=sfR.swellH!=null?sfR.swellH.toFixed(1)+'m':'--';
     $('sfSP').textContent=sfR.swellP!=null?sfR.swellP.toFixed(0)+'s':'--';
     $('sfSD').textContent=sfR.swellD!=null?compass(sfR.swellD)+' '+sfR.swellD.toFixed(0)+'°':'--';
     $('sfI').innerHTML=sfR.detail?`<strong>${sfR.risk>=2?'⚠ ':''}Analisi:</strong> ${sfR.detail}`:'';
 
-    // PORTO RISACCA
-    const prR=calcRisaccaPorto(sfD||ptfD);
-    $('prDot').className='pr-dot '+sC(prR.risk);$('prV').textContent=prR.label;
-
-    // PUNTA CHIAPPA
-    const pcR=calcCurrentPC(ptfD);
-    $('pcV').textContent=pcR.desc;
-    $('pcB').textContent=pcR.danger?'ATTENZIONE':'OK';
-    $('pcB').className='pc-badge '+(pcR.danger?'danger':'ok');
+    // PORTO + PUNTA CHIAPPA
+    const prR=calcRisaccaPtf(sfD);
+    $('prV').textContent=prR.label;$('prB').textContent=prR.risk>=2?'RISACCA':prR.risk===1?'ATTENZIONE':'OK';
+    $('prB').className='sm-badge '+(prR.risk>=2?'danger':prR.risk===1?'warn':'ok');
+    const pcR=calcPC(ptfD);
+    $('pcV').textContent=pcR.desc;$('pcB').textContent=pcR.danger?'ATTENZIONE':'OK';
+    $('pcB').className='sm-badge '+(pcR.danger?'danger':'ok');
 
     // ROUTES
-    renderRoute('rWest', ROUTE_W, data, h, S75, '🧭', 'Ovest', '~2.5 mn');
-    renderRoute('rEast', ROUTE_E, data, h, S75, '🧭', 'Est', '~1.5 mn');
+    renderRoute('rW',ROUTE_W,data,h,S75,'🧭','~2.5 mn');
+    renderRoute('rE',ROUTE_E,data,h,S75,'🧭','~1.5 mn');
 
     // WIND ROSE
-    renderWindRose(ptfD.windDir, ptfD.wind);
-
+    renderWR(ptfD.windDir,ptfD.wind);
     // METRICS
-    $('pM').innerHTML=[
-        mC('Vento',ev.sc.vento,ptfD.wind.toFixed(0),'kn',`${arrow(ptfD.windDir)} ${compass(ptfD.windDir)}`),
-        mC('Raffiche',ev.sc.raffiche,ptfD.gusts.toFixed(0),'kn',''),
-        mC('Onde',ev.sc.onde??-1,ptfD.waves!=null?ptfD.waves.toFixed(1):'--',ptfD.waves!=null?'m':'',''),
-        mC('Visibilità',ev.sc.vis,ptfD.vis>=1000?(ptfD.vis/1000).toFixed(0):ptfD.vis,ptfD.vis>=1000?'km':'m',''),
-    ].join('');
-
+    $('pM').innerHTML=[mC('Vento',ev.sc.vento,ptfD.wind.toFixed(0),'kn',`${arrow(ptfD.windDir)} ${compass(ptfD.windDir)}`),mC('Raffiche',ev.sc.raffiche,ptfD.gusts.toFixed(0),'kn',''),mC('Onde',ev.sc.onde??-1,ptfD.waves!=null?ptfD.waves.toFixed(1):'--',ptfD.waves!=null?'m':'',''),mC('Visibilità',ev.sc.vis,ptfD.vis>=1000?(ptfD.vis/1000).toFixed(0):ptfD.vis,ptfD.vis>=1000?'km':'m','')].join('');
     // TIMELINE
-    const ptfAll=data[ptfKey]?.tH||{};
-    let tl='';for(let i=7;i<=20;i++){const d=ptfAll[i];if(!d)continue;const e=evH(d,S75);tl+=`<div class="th ${i===h?'now':''}"><span class="th-t">${p2(i)}</span><span class="th-d ${sC(e.ov)}"></span><span class="th-i">${d.emoji}</span><span class="th-v">💨${d.wind.toFixed(0)}</span><span class="th-v">🌊${d.waves!=null?d.waves.toFixed(1):'--'}</span></div>`;}
-    $('pTL').innerHTML=tl;
+    const ptfAll=data[ptfKey]?.tH||{};let tl='';
+    for(let i=6;i<=21;i++){const d=ptfAll[i];if(!d)continue;const e=evH(d,S75);tl+=`<div class="th ${i===h?'now':''}"><span class="th-t">${p2(i)}</span><span class="th-d ${sC(e.ov)}"></span><span class="th-i">${d.emoji}</span><span class="th-v">💨${d.wind.toFixed(0)}</span><span class="th-v">🌊${d.waves!=null?d.waves.toFixed(1):'--'}</span></div>`;}
+    $('pTL').innerHTML=tl;requestAnimationFrame(()=>{const el=document.querySelector('#pTL .now');if(el)el.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});});
 
-    // MAP: Wind field + risacca zones
-    clearLayers();
-    drawPromontorioMarkers();
-    drawRisaccaZones(sfR.risk, prR.risk);
+    // MAP
+    drawMapPtf(sfR.risk,prR.risk);
+    windField=[];for(const[,pt] of Object.entries(PTS)){const k=`${pt.lat}_${pt.lon}`;const d=data[k]?.tH?.[h];if(d)windField.push({lat:pt.lat,lon:pt.lon,speed:d.wind,dir:d.windDir});}
+    startWF();map.setView([44.318,9.190],14);
 
-    // Build wind field from available data
-    windField=[];
-    for(const[key,pt] of Object.entries(PTS)){
-        const k=`${pt.lat}_${pt.lon}`;
-        const d=data[k]?.tH?.[h];
-        if(d)windField.push({lat:pt.lat,lon:pt.lon,speed:d.wind,dir:d.windDir});
-    }
-    startWindAnim();
-    map.setView([44.318,9.190],14);
+    // COMANDANTE: charts + table
+    if(mode==='cmd'){renderCharts();renderTable(data);}
 }
 
-function renderRoute(containerId, route, data, hour, soglie, icon, dir, dist){
-    const el=$(containerId);
-    // Evaluate each waypoint
-    const evals=route.map(wp=>{
-        const pt=PTS[wp.key];const k=`${pt.lat}_${pt.lon}`;
-        const raw=data[k]?.tH?.[hour];
-        const d=raw?applyExposure(raw,wp):null;
-        const ev=evH(d,soglie);
-        return{wp,data:d,raw,ev};
-    });
+function renderRoute(id,route,data,hour,soglie,icon,dist){
+    const evals=route.map(wp=>{const pt=PTS[wp.key];const k=`${pt.lat}_${pt.lon}`;const raw=data[k]?.tH?.[hour];const d=raw?applyExp(raw,wp):null;return{wp,data:d,ev:evH(d,soglie)};});
     const worst=Math.max(...evals.map(e=>e.ev.ov));
-
-    let html=`<div class="route-h"><span class="route-h-icon">${icon}</span><span class="route-h-title">Rotta ${dir}</span><span class="route-h-dist">${dist}</span><span class="route-h-st ${sC(worst)}">${sL(worst)}</span></div>`;
-    html+='<div class="rs">';
-    evals.forEach((e,i)=>{
-        const cls=e.ev.ov>=0?sC(e.ev.ov):'gray';const d=e.data;const last=i===evals.length-1;
-        let lc=cls;if(!last&&evals[i+1]?.ev.ov>=0)lc=sC(Math.max(e.ev.ov<0?0:e.ev.ov,evals[i+1].ev.ov));
-        html+=`<div class="rw"><div class="rl ${last?'':lc}"></div><span class="rd ${cls}"></span><div class="ri"><div class="rh"><span class="rn">${e.wp.name}</span><span class="rt">${e.wp.desc}</span></div>`;
-        if(d){
-            html+=`<div class="rm"><span>${d.emoji}</span><span>💨 ${d.wind.toFixed(0)} kn</span><span>🌊 ${d.waves!=null?d.waves.toFixed(1)+'m':'--'}</span></div>`;
-            if(e.ev.ov>=2){let w=[];if(e.ev.sc.vento>=2)w.push(`vento ${d.wind.toFixed(0)}kn`);if((e.ev.sc.onde||0)>=2&&d.waves!=null)w.push(`onde ${d.waves.toFixed(1)}m`);html+=`<span class="rb c">✕ ${w.join(' · ')||'Condizioni critiche'}</span>`;}
-            else if(e.ev.ov===1){let w=[];if(e.ev.sc.vento>=1)w.push(`vento ${d.wind.toFixed(0)}kn`);if((e.ev.sc.onde||0)>=1&&d.waves!=null)w.push(`onde ${d.waves.toFixed(1)}m`);html+=`<span class="rb w">⚠ ${w.join(' · ')}</span>`;}
-        } else html+=`<div class="rm" style="color:var(--text3)">Dati non disponibili</div>`;
-        html+=`</div></div>`;
-    });
-    html+='</div>';
-    el.innerHTML=html;
+    let html=`<div class="route-h"><span class="route-h-icon">${icon}</span><span class="route-h-title">${route[route.length-1].name}</span><span class="route-h-dist">${dist}</span><span class="route-h-st ${sC(worst)}">${sL(worst)}</span></div><div class="rs">`;
+    evals.forEach((e,i)=>{const cls=e.ev.ov>=0?sC(e.ev.ov):'gray';const d=e.data;const last=i===evals.length-1;
+    let lc=cls;if(!last&&evals[i+1]?.ev.ov>=0)lc=sC(Math.max(e.ev.ov<0?0:e.ev.ov,evals[i+1].ev.ov));
+    html+=`<div class="rw"><div class="rl ${last?'':lc}"></div><span class="rd ${cls}"></span><div class="ri"><div class="rh"><span class="rn">${e.wp.name}</span><span class="rt">${e.wp.desc}</span></div>`;
+    if(d){html+=`<div class="rm"><span>${d.emoji}</span><span>💨${d.wind.toFixed(0)}kn</span><span>🌊${d.waves!=null?d.waves.toFixed(1)+'m':'--'}</span></div>`;
+    if(e.ev.ov>=2){let w=[];if(e.ev.sc.vento>=2)w.push(`vento ${d.wind.toFixed(0)}kn`);if((e.ev.sc.onde||0)>=2&&d.waves!=null)w.push(`onde ${d.waves.toFixed(1)}m`);html+=`<span class="rb c">✕ ${w.join(' · ')||'Critico'}</span>`;}
+    else if(e.ev.ov===1){let w=[];if(e.ev.sc.vento>=1)w.push(`vento ${d.wind.toFixed(0)}kn`);if((e.ev.sc.onde||0)>=1&&d.waves!=null)w.push(`onde ${d.waves.toFixed(1)}m`);html+=`<span class="rb w">⚠ ${w.join(' · ')}</span>`;}}
+    else html+=`<div class="rm" style="color:var(--text3)">N/D</div>`;
+    html+=`</div></div>`;});
+    html+='</div>';$(id).innerHTML=html;
 }
 
 function mC(l,sc,v,u,det){return`<div class="mc ${sc>=0?sC(sc):''}"><div class="mc-l">${l}</div><div class="mc-v">${v} <span class="mc-u">${u}</span></div>${det?`<div class="mc-d">${det}</div>`:''}</div>`;}
+function renderWR(dir,speed){const rose=$('wrR');if(!rose.querySelector('.wr-d')){VENTI.forEach(v=>{const el=document.createElement('div');el.className='wr-d';el.dataset.deg=v.deg;const r=90,x=110+r*Math.sin(v.deg*Math.PI/180),y=110-r*Math.cos(v.deg*Math.PI/180);el.style.cssText=`left:${x}px;top:${y}px;transform:translate(-50%,-50%);position:absolute;`;el.innerHTML=`${v.s}<i>${v.name}</i>`;rose.appendChild(el);});}
+const act=windName(dir);rose.querySelectorAll('.wr-d').forEach(el=>{el.classList.toggle('act',parseInt(el.dataset.deg)===act.deg);});
+$('wrA').style.transform=`rotate(${dir}deg)`;$('wrS').textContent=speed.toFixed(0);$('wrN').textContent=`${act.name} (${act.s})`;$('wrD').textContent=act.desc;}
 
-// WIND ROSE
-function renderWindRose(dir,speed){
-    const rose=$('wrR');
-    if(!rose.querySelector('.wr-d')){
-        VENTI.forEach(v=>{
-            const el=document.createElement('div');el.className='wr-d';el.dataset.deg=v.deg;
-            const r=100,x=120+r*Math.sin(v.deg*Math.PI/180),y=120-r*Math.cos(v.deg*Math.PI/180);
-            el.style.cssText=`left:${x}px;top:${y}px;transform:translate(-50%,-50%);position:absolute;`;
-            el.innerHTML=`${v.s}<i>${v.name}</i>`;
-            rose.appendChild(el);
-        });
-    }
-    const active=windName(dir);
-    rose.querySelectorAll('.wr-d').forEach(el=>{el.classList.toggle('act',parseInt(el.dataset.deg)===active.deg);});
-    $('wrA').style.transform=`rotate(${dir}deg)`;
-    $('wrS').textContent=speed.toFixed(0);
-    $('wrN').textContent=`${active.name} (${active.s})`;
-    $('wrD').textContent=active.desc;
-}
-
-// DASHBOARD
-function renderDash(u){
-    if(!u){$('dU').innerHTML='<div style="color:var(--text3);font-size:11px">N/D</div>';return;}
-    const sg=u.stormglass,pct=sg.limit>0?(sg.calls/sg.limit*100):0;
-    $('dU').innerHTML=`<div class="dash-h">Oggi · ${u.date}</div>`+
-    `<div class="dash-r"><span class="dash-l">Stormglass</span><span class="dash-v">${sg.configured?sg.calls+'/'+sg.limit:'Non configurato'}</span></div>`+
-    (sg.configured?`<div class="dash-bar"><div class="dash-fill ${pct>90?'crit':pct>70?'warn':'ok'}" style="width:${Math.min(pct,100)}%"></div></div>`:'')+
-    `<div class="dash-r"><span class="dash-l">Open-Meteo</span><span class="dash-v">${u.openmeteo.calls} chiamate</span></div>`+
-    `<div class="dash-r"><span class="dash-l">Cache</span><span class="dash-v">${u.cache.entries} entries · TTL ${u.cache.ttl_minutes} min</span></div>`;
-}
-
-// 5 TERRE (simplified)
+// ================================================================
+// RENDER: 5 TERRE
+// ================================================================
 function render5T(data){
-    const h=nowH(); const dep=RS.dep;
-    $('tpA').innerHTML=[7,8,9,10,11].map(hr=>`<button class="tb ${hr===dep?'a':''}" style="padding:8px 12px;border-radius:8px;min-width:auto;flex:none;border:1px solid var(--border2);${hr===dep?'background:var(--gold);color:var(--bg);border-color:var(--gold)':''}" onclick="RS.dep=${hr};render5T(APP.data)">${p2(hr)}</button>`).join('');
-    const pts=ROUTE_5T;const evals=pts.map(wp=>{const k=`${wp.lat}_${wp.lon}`;const hr=Math.round(dep+wp.nm/12);const d=data[k]?.tH?.[hr];const ev=d?evH(d,S10):{ov:-1,sc:{}};
-    if(ev.ov===1&&wp.riparo==='nessuno'){ev.ov=2;ev._sh=true;}
-    return{wp,hour:hr,data:d,ev};});
+    const dep=RS.dep;
+    $('tpA').innerHTML=[7,8,9,10,11].map(h=>`<button class="tp-b ${h===dep?'a':''}" data-h="${h}">${p2(h)}</button>`).join('');
+    $('tpA').querySelectorAll('.tp-b').forEach(b=>{b.onclick=()=>{RS.dep=parseInt(b.dataset.h);render5T(data);}});
+    const evals=ROUTE_5T.map(wp=>{const k=`${wp.lat}_${wp.lon}`;const hr=Math.round(dep+wp.nm/12);const d=data[k]?.tH?.[hr];const ev=d?evH(d,S10):{ov:-1,sc:{}};if(ev.ov===1&&wp.riparo==='nessuno'){ev.ov=2;ev._sh=true;}return{wp,hour:hr,data:d,ev};});
     const worst=Math.max(...evals.filter(e=>e.ev.ov>=0).map(e=>e.ev.ov));
-    const cd=$('rSt');cd.className='st '+sC(worst);$('rI').textContent=sI(worst);$('rT').textContent=worst===0?'SI PUÒ NAVIGARE':worst===1?'CON CAUTELA':'NON SI NAVIGA';$('rS').textContent='';$('rX').textContent='';
+    $('rSt').className='st '+sC(worst);$('rI').textContent=sI(worst);$('rT').textContent=worst===0?'SI PUÒ NAVIGARE':worst===1?'CON CAUTELA':'NON SI NAVIGA';$('rS').textContent='';$('rX').textContent='';
     let html='<div class="rs">';
     evals.forEach((e,i)=>{const cls=e.ev.ov>=0?sC(e.ev.ov):'gray';const d=e.data;const last=i===evals.length-1;
     let lc=cls;if(!last&&evals[i+1]?.ev.ov>=0)lc=sC(Math.max(e.ev.ov<0?0:e.ev.ov,evals[i+1].ev.ov));
     html+=`<div class="rw"><div class="rl ${last?'':lc}"></div><span class="rd ${cls}"></span><div class="ri"><div class="rh"><span class="rn">${e.wp.name}</span><span class="rt">${p2(e.hour)}:00</span></div>`;
-    if(d)html+=`<div class="rm"><span>${d.emoji}</span><span>💨 ${d.wind.toFixed(0)} kn</span><span>🌊 ${d.waves!=null?d.waves.toFixed(1)+'m':'--'}</span></div>`;
+    if(d)html+=`<div class="rm"><span>${d.emoji}</span><span>💨${d.wind.toFixed(0)}kn</span><span>🌊${d.waves!=null?d.waves.toFixed(1)+'m':'--'}</span></div>`;
     else html+=`<div class="rm" style="color:var(--text3)">N/D</div>`;
-    if(e.ev._sh)html+=`<span class="rb c">✕ Nessun ridosso — ROSSO</span>`;
-    else if(e.wp.esposto&&e.ev.ov>=1)html+=`<span class="rb w">⚠ Tratto esposto</span>`;
+    if(e.ev._sh)html+=`<span class="rb c">✕ Nessun ridosso</span>`;else if(e.wp.esp&&e.ev.ov>=1)html+=`<span class="rb w">⚠ Esposto</span>`;
     html+=`</div></div>`;});
     html+='</div>';$('r5A').innerHTML=html;
+}
+
+// ================================================================
+// RENDER: DASHBOARD
+// ================================================================
+function renderDash(u){
+    if(!u){$('dU').innerHTML='N/D';return;}
+    const sg=u.stormglass,pct=sg.limit>0?(sg.calls/sg.limit*100):0;
+    $('dU').innerHTML=`<div class="dash-h">Oggi · ${u.date}</div>`+
+    `<div class="dash-r"><span class="dash-l">Stormglass</span><span class="dash-v">${sg.configured?sg.calls+'/'+sg.limit:'Non configurato'}</span></div>`+
+    (sg.configured?`<div class="dash-bar"><div class="dash-fill ${pct>90?'crit':pct>70?'warn':'ok'}" style="width:${Math.min(pct,100)}%"></div></div>`:'')+
+    `<div class="dash-r"><span class="dash-l">Open-Meteo</span><span class="dash-v">${u.openmeteo.calls}</span></div>`+
+    `<div class="dash-r"><span class="dash-l">Cache</span><span class="dash-v">${u.cache.entries} · TTL ${u.cache.ttl_minutes}min</span></div>`;
+}
+async function renderHistoryDates(){
+    const r=await fetchHistoryDates();
+    $('dHList').innerHTML=r.dates.length?r.dates.map(d=>`<div style="padding:3px 0;border-bottom:1px solid var(--border)">${d}</div>`).join(''):'Nessun dato storico ancora.';
 }
 
 // ================================================================
@@ -692,57 +603,35 @@ function render5T(data){
 // ================================================================
 let aTab=localStorage.getItem('mm_t')||'ptf';
 function sw(t){aTab=t;localStorage.setItem('mm_t',t);
-document.querySelectorAll('.tb').forEach(b=>b.classList.remove('a'));
 $('t1').classList.toggle('a',t==='ptf');$('t2').classList.toggle('a',t==='5t');$('t3').classList.toggle('a',t==='dash');
 $('pPtf').classList.toggle('a',t==='ptf');$('p5T').classList.toggle('a',t==='5t');$('pDash').classList.toggle('a',t==='dash');
 if(t==='ptf')map.setView([44.318,9.190],14);
-if(t==='5t')map.fitBounds(ROUTE_5T.map(w=>[w.lat,w.lon]),{padding:[30,30]});
+if(t==='5t'){const b=ROUTE_5T.map(w=>[w.lat,w.lon]);map.fitBounds(b,{padding:[30,30]});}
+if(t==='dash'){if(APP.usage)renderDash(APP.usage);renderHistoryDates();}
 setTimeout(()=>map.invalidateSize(),100);
-if(t==='dash'&&APP.usage)renderDash(APP.usage);}
+if(t==='ptf'&&mode==='cmd'&&APP.data)renderCharts();}
 
 // ================================================================
-// LOAD DATA
+// LOAD
 // ================================================================
 async function loadData(){
     $('btnR').classList.add('spin');
     try{
-        // All points we need data for
         const allPts=[...Object.values(PTS),...ROUTE_5T.map(w=>({lat:w.lat,lon:w.lon}))];
-        // Deduplicate
-        const unique=[];const seen=new Set();
-        for(const p of allPts){const k=`${p.lat}_${p.lon}`;if(!seen.has(k)){seen.add(k);unique.push({lat:p.lat,lon:p.lon});}}
-
-        const [wBatch, mBatch, usage] = await Promise.all([
-            fetchBatchWeather(unique),
-            fetchBatchMarine(unique).catch(()=>null),
-            fetchUsage(),
-        ]);
-
-        APP.data = normBatch(wBatch, mBatch, unique);
-        APP.usage = usage;
-
+        const unique=[];const seen=new Set();for(const p of allPts){const k=`${p.lat}_${p.lon}`;if(!seen.has(k)){seen.add(k);unique.push({lat:p.lat,lon:p.lon});}}
+        const [wB,mB,usage]=await Promise.all([fetchBW(unique),fetchBM(unique).catch(()=>null),fetchUsage()]);
+        APP.data=normBatch(wB,mB,unique);APP.usage=usage;
         $('srcBar').innerHTML=`<span class="sd on"></span>Open-Meteo ECMWF · ${unique.length} punti · ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
-
-        renderAll(APP.data);
-        render5T(APP.data);
-        if(APP.usage)renderDash(APP.usage);
-
-    }catch(e){
-        console.error(e);
-        $('srcBar').innerHTML='<span class="sd off"></span>Errore — riprova';
-    }
-    $('loadV').style.display='none';
-    $('btnR').classList.remove('spin');
-    if(timer)clearTimeout(timer);
-    timer=setTimeout(loadData,REFRESH);
+        renderPtf(APP.data);render5T(APP.data);if(usage)renderDash(usage);
+    }catch(e){console.error(e);$('srcBar').innerHTML='<span class="sd off"></span>Errore — riprova';}
+    $('loadV').style.display='none';$('btnR').classList.remove('spin');
+    if(timer)clearTimeout(timer);timer=setTimeout(loadData,REFRESH);
 }
 
 // ================================================================
 // INIT
 // ================================================================
-sw(aTab);
-drawPromontorioMarkers();
-loadData();
+sw(aTab);drawMapPtf(0,0);loadData();
 </script>
 </body>
 </html>

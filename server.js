@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,8 +10,6 @@ const SG_LIMIT = parseInt(process.env.STORMGLASS_DAILY_LIMIT) || 500;
 
 // ================================================================
 // CACHE IN-MEMORY (TTL 15 minuti)
-// Evita chiamate ridondanti: se più dispositivi (direttrice, comandante,
-// reception) chiedono gli stessi dati, il server risponde dalla cache.
 // ================================================================
 const cache = new Map();
 const CACHE_TTL = 15 * 60 * 1000;
@@ -21,9 +20,35 @@ function cacheGet(key) {
     if (Date.now() - entry.ts > CACHE_TTL) { cache.delete(key); return null; }
     return entry.data;
 }
-
 function cacheSet(key, data) {
     cache.set(key, { ts: Date.now(), data });
+}
+
+// ================================================================
+// STORICO — salva snapshot ogni fetch in JSON su disco
+// Un file per giorno: data/history/YYYY-MM-DD.json
+// Ogni entry: { ts, type, points, data }
+// ================================================================
+const HISTORY_DIR = path.join(__dirname, 'data', 'history');
+fs.mkdirSync(HISTORY_DIR, { recursive: true });
+
+function saveHistory(type, points, data) {
+    try {
+        const today = todayStr();
+        const file = path.join(HISTORY_DIR, `${today}.json`);
+        let history = [];
+        if (fs.existsSync(file)) {
+            try { history = JSON.parse(fs.readFileSync(file, 'utf8')); } catch {}
+        }
+        // Limita a 1 snapshot per tipo ogni 15 min
+        const lastOfType = history.filter(h => h.type === type).pop();
+        if (lastOfType && Date.now() - new Date(lastOfType.ts).getTime() < CACHE_TTL) return;
+
+        history.push({ ts: new Date().toISOString(), type, points, data });
+        fs.writeFileSync(file, JSON.stringify(history));
+    } catch (e) {
+        console.warn('History save error:', e.message);
+    }
 }
 
 // ================================================================
@@ -32,7 +57,6 @@ function cacheSet(key, data) {
 let usage = { date: todayStr(), stormglass: 0, openmeteo: 0 };
 
 function todayStr() { return new Date().toISOString().split('T')[0]; }
-
 function track(source) {
     if (usage.date !== todayStr()) usage = { date: todayStr(), stormglass: 0, openmeteo: 0 };
     usage[source]++;
@@ -44,16 +68,13 @@ function track(source) {
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ================================================================
-// BATCH WEATHER — Un'unica chiamata per N punti
-// Open-Meteo supporta coordinate multiple separate da virgola.
-// Riduce N chiamate a 1 sola.
+// BATCH WEATHER
 // ================================================================
 app.get('/api/batch-weather', async (req, res) => {
-    const { points } = req.query; // JSON: [{lat,lon},...]
+    const { points } = req.query;
     if (!points) return res.status(400).json({ error: 'points required' });
-
     let pts;
-    try { pts = JSON.parse(points); } catch { return res.status(400).json({ error: 'invalid points JSON' }); }
+    try { pts = JSON.parse(points); } catch { return res.status(400).json({ error: 'invalid JSON' }); }
 
     const cacheKey = `bw_${JSON.stringify(pts)}`;
     const cached = cacheGet(cacheKey);
@@ -61,7 +82,6 @@ app.get('/api/batch-weather', async (req, res) => {
 
     const lats = pts.map(p => p.lat).join(',');
     const lons = pts.map(p => p.lon).join(',');
-
     try {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}`
             + `&hourly=temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,visibility,precipitation`
@@ -71,6 +91,7 @@ app.get('/api/batch-weather', async (req, res) => {
         const data = await r.json();
         track('openmeteo');
         cacheSet(cacheKey, data);
+        saveHistory('weather', pts, data);
         res.json(data);
     } catch (e) {
         res.status(502).json({ error: 'Open-Meteo non raggiungibile', detail: e.message });
@@ -78,14 +99,13 @@ app.get('/api/batch-weather', async (req, res) => {
 });
 
 // ================================================================
-// BATCH MARINE — Un'unica chiamata per N punti (con swell per risacca)
+// BATCH MARINE
 // ================================================================
 app.get('/api/batch-marine', async (req, res) => {
     const { points } = req.query;
     if (!points) return res.status(400).json({ error: 'points required' });
-
     let pts;
-    try { pts = JSON.parse(points); } catch { return res.status(400).json({ error: 'invalid points JSON' }); }
+    try { pts = JSON.parse(points); } catch { return res.status(400).json({ error: 'invalid JSON' }); }
 
     const cacheKey = `bm_${JSON.stringify(pts)}`;
     const cached = cacheGet(cacheKey);
@@ -93,7 +113,6 @@ app.get('/api/batch-marine', async (req, res) => {
 
     const lats = pts.map(p => p.lat).join(',');
     const lons = pts.map(p => p.lon).join(',');
-
     try {
         const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lats}&longitude=${lons}`
             + `&hourly=wave_height,wave_period,wave_direction,swell_wave_height,swell_wave_period,swell_wave_direction`
@@ -103,6 +122,7 @@ app.get('/api/batch-marine', async (req, res) => {
         const data = await r.json();
         track('openmeteo');
         cacheSet(cacheKey, data);
+        saveHistory('marine', pts, data);
         res.json(data);
     } catch (e) {
         res.status(502).json({ error: 'Open-Meteo Marine non raggiungibile', detail: e.message });
@@ -110,7 +130,7 @@ app.get('/api/batch-marine', async (req, res) => {
 });
 
 // ================================================================
-// STORMGLASS (multi-model, opzionale)
+// STORMGLASS — restituisce dati RAW per-modello (il frontend li mostra)
 // ================================================================
 app.get('/api/stormglass', async (req, res) => {
     if (!SG_KEY) return res.status(400).json({ error: 'STORMGLASS_API_KEY non configurata' });
@@ -135,6 +155,7 @@ app.get('/api/stormglass', async (req, res) => {
         const data = await r.json();
         track('stormglass');
         cacheSet(cacheKey, data);
+        saveHistory('stormglass', [{lat, lon}], data);
         res.json(data);
     } catch (e) {
         res.status(502).json({ error: 'Stormglass non raggiungibile', detail: e.message });
@@ -142,7 +163,33 @@ app.get('/api/stormglass', async (req, res) => {
 });
 
 // ================================================================
-// USAGE DASHBOARD
+// STORICO — leggi snapshot passati
+// ================================================================
+app.get('/api/history', (req, res) => {
+    const { date } = req.query;
+    const target = date || todayStr();
+    const file = path.join(HISTORY_DIR, `${target}.json`);
+    if (!fs.existsSync(file)) return res.json({ date: target, snapshots: [] });
+    try {
+        const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+        res.json({ date: target, snapshots: data });
+    } catch {
+        res.json({ date: target, snapshots: [] });
+    }
+});
+
+// Lista giorni disponibili
+app.get('/api/history/dates', (req, res) => {
+    try {
+        const files = fs.readdirSync(HISTORY_DIR).filter(f => f.endsWith('.json')).map(f => f.replace('.json', '')).sort().reverse();
+        res.json({ dates: files });
+    } catch {
+        res.json({ dates: [] });
+    }
+});
+
+// ================================================================
+// USAGE
 // ================================================================
 app.get('/api/usage', (req, res) => {
     if (usage.date !== todayStr()) usage = { date: todayStr(), stormglass: 0, openmeteo: 0 };
@@ -154,9 +201,6 @@ app.get('/api/usage', (req, res) => {
     });
 });
 
-// ================================================================
-// HEALTH / CONFIG
-// ================================================================
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', stormglass: !!SG_KEY, cache_entries: cache.size, uptime: process.uptime() });
 });
@@ -171,6 +215,6 @@ app.listen(PORT, () => {
     console.log('');
     console.log(`  Stormglass: ${SG_KEY ? '✓ configurato' : '✕ non configurato (solo Open-Meteo)'}`);
     console.log(`  Cache TTL:  ${CACHE_TTL / 60000} minuti`);
-    console.log(`  Limite SG:  ${SG_LIMIT} chiamate/giorno`);
+    console.log(`  Storico:    ${HISTORY_DIR}`);
     console.log('');
 });
