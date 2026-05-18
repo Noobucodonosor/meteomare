@@ -205,8 +205,27 @@ footer strong{color:var(--text2);}
 <div class="sec">Rosa dei Venti</div>
 <div class="wr-w"><div class="wr" id="wrR"><div class="wr-ring" id="wrRing"></div><div class="wr-arr" id="wrA"></div><div class="wr-c" id="wrC"><span class="wr-sp" id="wrS">--</span><span class="wr-u">KN</span><span class="wr-heading" id="wrH">---°</span></div></div><div class="wr-name" id="wrN">--</div><div class="wr-desc" id="wrD"></div><button class="compass-btn" id="compassBtn" onclick="toggleCompass()">🧭 Abilita bussola live</button></div>
 
+<div class="sec">Per i turisti</div>
+<div class="mg" id="pTourist"></div>
+
 <div class="sec">Condizioni Portofino</div>
 <div class="mg" id="pM"></div>
+
+<div class="sec cmd">Atmosfera</div>
+<div class="mg cmd" id="pAtmo"></div>
+
+<div class="sec cmd">Correnti marine</div>
+<div class="mg cmd" id="pCurr"></div>
+
+<div class="sec">Area Marina Protetta</div>
+<div style="background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);margin-bottom:12px;">
+<div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px;">AMP Portofino — Zone</div>
+<div style="display:flex;flex-direction:column;gap:6px;">
+<div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:2px;background:#DC2626;flex-shrink:0;"></span><div><div style="font-size:10px;font-weight:700;color:var(--red);">Zona A — Integrale</div><div style="font-size:9px;color:var(--text3)">Navigazione VIETATA. Cala dell'Oro.</div></div></div>
+<div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:2px;background:#FBBF24;flex-shrink:0;"></span><div><div style="font-size:10px;font-weight:700;color:var(--amber);">Zona B — Generale</div><div style="font-size:9px;color:var(--text3)">Max 5 nodi. Ancoraggio vietato. Balneazione sì.</div></div></div>
+<div style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:2px;background:#34D399;flex-shrink:0;"></span><div><div style="font-size:10px;font-weight:700;color:var(--green);">Zona C — Parziale</div><div style="font-size:9px;color:var(--text3)">Max 10 nodi. Pesca sportiva autorizzata. Immersioni guidate.</div></div></div>
+</div>
+</div>
 
 <div class="sec">Previsione oraria</div>
 <div class="tls"><div class="tl" id="pTL"></div></div>
@@ -349,6 +368,23 @@ function recommendRoute(data){
 }
 const S75={vento:{v:10,g:16},raffiche:{v:15,g:22},onde:{v:0.5,g:1},vis:{v:5000,g:2000}};
 const S10={vento:{v:12,g:20},raffiche:{v:18,g:28},onde:{v:0.75,g:1.5},vis:{v:5000,g:2000}};
+// ---- AREA MARINA PROTETTA DI PORTOFINO ----
+// Zone approssimate (poligoni semplificati)
+const AMP_ZONES = [
+    {name:'Zona A — Riserva Integrale',color:'#DC2626',opacity:0.15,desc:'Divieto assoluto di navigazione, ancoraggio, pesca e balneazione.',
+     coords:[[44.3155,9.1720],[44.3175,9.1680],[44.3210,9.1690],[44.3210,9.1740],[44.3180,9.1760]]},
+    {name:'Zona B — Riserva Generale',color:'#FBBF24',opacity:0.1,desc:'Navigazione a velocità ridotta (max 5 nodi). Ancoraggio vietato. Balneazione consentita.',
+     coords:[[44.3050,9.1950],[44.3100,9.1850],[44.3155,9.1720],[44.3210,9.1690],[44.3280,9.1620],[44.3350,9.1600],[44.3380,9.1620],[44.3380,9.1700],[44.3350,9.1680],[44.3280,9.1700],[44.3210,9.1800],[44.3155,9.1850],[44.3100,9.1950],[44.3050,9.2000]]},
+    {name:'Zona C — Riserva Parziale',color:'#34D399',opacity:0.08,desc:'Navigazione consentita (max 10 nodi). Pesca sportiva con autorizzazione. Immersioni guidate.',
+     coords:[[44.3000,9.2050],[44.3050,9.1950],[44.3050,9.2000],[44.3100,9.1950],[44.3155,9.1850],[44.3210,9.1800],[44.3280,9.1700],[44.3350,9.1680],[44.3380,9.1700],[44.3400,9.1750],[44.3400,9.1900],[44.3380,9.2000],[44.3350,9.2050],[44.3300,9.2100],[44.3200,9.2150],[44.3100,9.2180],[44.3000,9.2150]]},
+];
+
+// Sentieri principali del Parco (coordinate approssimative)
+const SENTIERI = [
+    {name:'Portofino → San Fruttuoso',color:'#A78BFA',coords:[[44.303,9.210],[44.305,9.207],[44.308,9.200],[44.310,9.195],[44.313,9.190],[44.316,9.183],[44.319,9.175]]},
+    {name:'Portofino → Batterie',color:'#A78BFA',coords:[[44.303,9.210],[44.304,9.205],[44.306,9.198],[44.305,9.193]]},
+];
+
 const VENTI=[
     {name:'Tramontana',s:'N',deg:0,desc:'Da nord. Portofino riparato. Attenzione costa ovest.'},
     {name:'Grecale',s:'NE',deg:45,desc:'Da nord-est. Generalmente gestibile.'},
@@ -455,6 +491,20 @@ function drawMapPtf(sfRisk,prRisk){
     if(sfRisk>=2){mapLayers.push(L.circle([PTS.sanFruttuoso.lat,PTS.sanFruttuoso.lon],{radius:250,color:sfCol,fillColor:sfCol,fillOpacity:.1,weight:1,opacity:.3}).addTo(map));}
     const prCol=prRisk>=2?'#F87171':prRisk===1?'#FBBF24':'#34D399';
     mapLayers.push(L.circle([PTS.portofino.lat,PTS.portofino.lon],{radius:120,color:prCol,fillColor:prCol,fillOpacity:prRisk>=1?.2:.06,weight:2,opacity:.5}).addTo(map));
+    // Zone AMP
+    AMP_ZONES.forEach(z=>{
+        const poly=L.polygon(z.coords,{color:z.color,fillColor:z.color,fillOpacity:z.opacity,weight:1.5,opacity:0.5,dashArray:'4,4'}).addTo(map);
+        poly.bindPopup(`<strong style="color:${z.color}">${z.name}</strong><br>${z.desc}`);
+        mapLayers.push(poly);
+    });
+    // Sentieri (in modalità comandante)
+    if(mode==='cmd'){
+        SENTIERI.forEach(s=>{
+            const trail=L.polyline(s.coords,{color:s.color,weight:2,opacity:0.4,dashArray:'3,5'}).addTo(map);
+            trail.bindPopup(`<strong>🥾 ${s.name}</strong>`);
+            mapLayers.push(trail);
+        });
+    }
 }
 
 // ================================================================
@@ -478,8 +528,23 @@ function normBatch(wB,mB,pts){
         const daily=wItem.daily||null;
         const times=wH.time;
         times.forEach((t,i)=>{const ds=t.substring(0,10),h=parseInt(t.substring(11,13)),code=wH.weather_code?.[i]||0;
-        const e={wind:wH.wind_speed_10m?.[i]||0,gusts:wH.wind_gusts_10m?.[i]||0,windDir:wH.wind_direction_10m?.[i]||0,vis:wH.visibility?.[i]||50000,temp:wH.temperature_2m?.[i]||0,precip:wH.precipitation?.[i]||0,code,emoji:WE[code]||'🌤️',desc:WD[code]||'',severity:evCode(code),
-        waves:mHr?.wave_height?.[i]??null,wavePer:mHr?.wave_period?.[i]??null,waveDir:mHr?.wave_direction?.[i]??null,swellH:mHr?.swell_wave_height?.[i]??null,swellP:mHr?.swell_wave_period?.[i]??null,swellD:mHr?.swell_wave_direction?.[i]??null};
+        const e={
+            // Meteo
+            wind:wH.wind_speed_10m?.[i]||0, gusts:wH.wind_gusts_10m?.[i]||0, windDir:wH.wind_direction_10m?.[i]||0,
+            vis:wH.visibility?.[i]||50000, temp:wH.temperature_2m?.[i]||0, precip:wH.precipitation?.[i]||0,
+            code, emoji:WE[code]||'🌤️', desc:WD[code]||'', severity:evCode(code),
+            // Nuovi parametri meteo
+            appTemp:wH.apparent_temperature?.[i]??null, humidity:wH.relative_humidity_2m?.[i]??null,
+            pressure:wH.pressure_msl?.[i]??null, cloudCover:wH.cloud_cover?.[i]??null, uv:wH.uv_index?.[i]??null,
+            // Mare — onde totali
+            waves:mHr?.wave_height?.[i]??null, wavePer:mHr?.wave_period?.[i]??null, waveDir:mHr?.wave_direction?.[i]??null,
+            // Mare — swell
+            swellH:mHr?.swell_wave_height?.[i]??null, swellP:mHr?.swell_wave_period?.[i]??null, swellD:mHr?.swell_wave_direction?.[i]??null,
+            // Mare — onde da vento
+            windWaveH:mHr?.wind_wave_height?.[i]??null, windWaveP:mHr?.wind_wave_period?.[i]??null, windWaveD:mHr?.wind_wave_direction?.[i]??null,
+            // Mare — correnti
+            currentV:mHr?.ocean_current_velocity?.[i]??null, currentD:mHr?.ocean_current_direction?.[i]??null,
+        };
         if(ds===today)tH[h]=e;else if(ds===tmw)mH[h]=e;});
         result[key]={tH,mH,daily};
     });return result;
@@ -585,11 +650,11 @@ function renderTable(data){
     const ptfKey=`${PTS.portofino.lat}_${PTS.portofino.lon}`;
     const ptfAll=data[ptfKey]?.tH||{};
     const h=nowH();
-    let html='<table><thead><tr><th>Ora</th><th>Vento</th><th>Raff.</th><th>Dir.</th><th>Onde</th><th>Swell</th><th>Per.</th><th>Dir.Sw</th><th>Vis.</th><th>Temp</th><th>Precip</th></tr></thead><tbody>';
+    let html='<table><thead><tr><th>Ora</th><th>Vento</th><th>Raff.</th><th>Dir.V</th><th>Onde</th><th>Swell</th><th>Per.S</th><th>Dir.S</th><th>O.Vento</th><th>Corr.</th><th>Dir.C</th><th>Vis.</th><th>Temp</th><th>Perc.</th><th>Press.</th><th>Umid.</th><th>UV</th><th>Nuv.</th><th>Prec.</th></tr></thead><tbody>';
     for(let i=0;i<=23;i++){
         const d=ptfAll[i];if(!d)continue;
         const isNow=i===h;
-        html+=`<tr class="${isNow?'now-row':''}"><td>${p2(i)}:00</td><td>${d.wind.toFixed(1)}</td><td>${d.gusts.toFixed(1)}</td><td>${compass(d.windDir)} ${d.windDir.toFixed(0)}°</td><td>${d.waves!=null?d.waves.toFixed(2):'--'}</td><td>${d.swellH!=null?d.swellH.toFixed(2):'--'}</td><td>${d.swellP!=null?d.swellP.toFixed(1):'--'}</td><td>${d.swellD!=null?compass(d.swellD)+' '+d.swellD.toFixed(0)+'°':'--'}</td><td>${(d.vis/1000).toFixed(1)}km</td><td>${d.temp.toFixed(1)}°</td><td>${d.precip.toFixed(1)}</td></tr>`;
+        html+=`<tr class="${isNow?'now-row':''}"><td>${p2(i)}:00</td><td>${d.wind.toFixed(1)}</td><td>${d.gusts.toFixed(1)}</td><td>${compass(d.windDir)} ${d.windDir.toFixed(0)}°</td><td>${d.waves!=null?d.waves.toFixed(2):'--'}</td><td>${d.swellH!=null?d.swellH.toFixed(2):'--'}</td><td>${d.swellP!=null?d.swellP.toFixed(1):'--'}</td><td>${d.swellD!=null?compass(d.swellD)+'°':'--'}</td><td>${d.windWaveH!=null?d.windWaveH.toFixed(2):'--'}</td><td>${d.currentV!=null?d.currentV.toFixed(2):'--'}</td><td>${d.currentD!=null?compass(d.currentD):'--'}</td><td>${(d.vis/1000).toFixed(1)}</td><td>${d.temp.toFixed(1)}</td><td>${d.appTemp!=null?d.appTemp.toFixed(1):'--'}</td><td>${d.pressure!=null?d.pressure.toFixed(0):'--'}</td><td>${d.humidity!=null?d.humidity.toFixed(0):'--'}</td><td>${d.uv!=null?d.uv.toFixed(0):'--'}</td><td>${d.cloudCover!=null?d.cloudCover.toFixed(0):'--'}</td><td>${d.precip.toFixed(1)}</td></tr>`;
     }
     html+='</tbody></table>';
     $('pTable').innerHTML=html;
@@ -633,8 +698,31 @@ function renderPtf(data){
 
     // WIND ROSE
     renderWR(ptfD.windDir,ptfD.wind);
-    // METRICS
+    // TURISTI
+    const uvLevel = ptfD.uv!=null ? (ptfD.uv>=8?2:ptfD.uv>=3?1:0) : -1;
+    $('pTourist').innerHTML=[
+        mC('UV',uvLevel,ptfD.uv!=null?ptfD.uv.toFixed(0):'--','',ptfD.uv!=null?(ptfD.uv>=8?'Molto alto':ptfD.uv>=6?'Alto':ptfD.uv>=3?'Moderato':'Basso'):''),
+        mC('Percepita',-1,ptfD.appTemp!=null?ptfD.appTemp.toFixed(0):'--','°C','Come ci si sente'),
+        mC('Corrente',-1,ptfD.currentV!=null?ptfD.currentV.toFixed(1):'--',ptfD.currentV!=null?'m/s':'',ptfD.currentD!=null?`Dir: ${compass(ptfD.currentD)}`:''),
+        mC('Nuvole',-1,ptfD.cloudCover!=null?ptfD.cloudCover.toFixed(0):'--','%',''),
+    ].join('');
+
+    // METRICS (marinai)
     $('pM').innerHTML=[mC('Vento',ev.sc.vento,ptfD.wind.toFixed(0),'kn',`${arrow(ptfD.windDir)} ${compass(ptfD.windDir)}`),mC('Raffiche',ev.sc.raffiche,ptfD.gusts.toFixed(0),'kn',''),mC('Onde',ev.sc.onde??-1,ptfD.waves!=null?ptfD.waves.toFixed(1):'--',ptfD.waves!=null?'m':'',''),mC('Visibilità',ev.sc.vis,ptfD.vis>=1000?(ptfD.vis/1000).toFixed(0):ptfD.vis,ptfD.vis>=1000?'km':'m','')].join('');
+
+    // ATMOSFERA (mode comandante)
+    $('pAtmo').innerHTML=[
+        mC('Pressione',-1,ptfD.pressure!=null?ptfD.pressure.toFixed(0):'--','hPa',ptfD.pressure!=null?(ptfD.pressure<1010?'Bassa — instabile':ptfD.pressure>1020?'Alta — stabile':'Nella norma'):''),
+        mC('Umidità',-1,ptfD.humidity!=null?ptfD.humidity.toFixed(0):'--','%',''),
+        mC('Onda vento',-1,ptfD.windWaveH!=null?ptfD.windWaveH.toFixed(1):'--',ptfD.windWaveH!=null?'m':'',ptfD.windWaveP!=null?`Per. ${ptfD.windWaveP.toFixed(0)}s`:''),
+        mC('Temperatura',-1,ptfD.temp.toFixed(0),'°C','Aria'),
+    ].join('');
+
+    // CORRENTI (mode comandante)
+    $('pCurr').innerHTML=[
+        mC('Corrente sup.',-1,ptfD.currentV!=null?ptfD.currentV.toFixed(2):'--',ptfD.currentV!=null?'m/s':'',ptfD.currentD!=null?`${arrow(ptfD.currentD)} ${compass(ptfD.currentD)} ${ptfD.currentD.toFixed(0)}°`:'Non disponibile'),
+        mC('Swell dir.',-1,ptfD.swellD!=null?compass(ptfD.swellD):'--','',ptfD.swellD!=null?`${ptfD.swellD.toFixed(0)}°`:''),
+    ].join('');
     // TIMELINE
     const ptfAll=data[ptfKey]?.tH||{};let tl='';
     for(let i=6;i<=21;i++){const d=ptfAll[i];if(!d)continue;const e=evH(d,S75);tl+=`<div class="th ${i===h?'now':''}"><span class="th-t">${p2(i)}</span><span class="th-d ${sC(e.ov)}"></span><span class="th-i">${d.emoji}</span><span class="th-v">💨${d.wind.toFixed(0)}</span><span class="th-v">🌊${d.waves!=null?d.waves.toFixed(1):'--'}</span></div>`;}
