@@ -230,13 +230,22 @@ footer strong{color:var(--text2);}
 <!-- ============ 5 TERRE ============ -->
 <main class="tc" id="p5T">
 <div class="st green" id="rSt"><div class="st-i" id="rI">✓</div><div class="st-t" id="rT">ANALISI</div><div class="st-s" id="rS"></div><div class="st-x" id="rX"></div></div>
+
+<div class="sec">Rotta raccomandata</div>
+<div id="r5Rec" style="background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;"></div>
+
 <div class="sec">Partenza</div>
-<div class="tp-row"><span class="tp-l">Andata</span><div class="tp-bs" id="tpA"></div></div>
-<div class="sec">Waypoint</div>
+<div class="tp-row"><span class="tp-l">Ora</span><div class="tp-bs" id="tpA"></div></div>
+
+<div class="sec">Seleziona rotta</div>
+<div id="r5Sel" style="display:flex;gap:6px;margin-bottom:12px;"></div>
+
+<div class="sec" id="r5RouteTitle">Waypoint</div>
 <div class="route-sec" id="r5A"></div>
+
 <div class="cmd">
-<div class="sec">Vento lungo rotta — 24h</div>
-<div class="chart-wrap"><canvas id="ch5W"></canvas></div>
+<div class="sec">Profondità lungo rotta (GEBCO)</div>
+<div class="chart-wrap"><canvas id="chDepth"></canvas></div>
 </div>
 </main>
 
@@ -286,14 +295,58 @@ const ROUTE_E=[
     {key:'paraggi',name:'Paraggi',sf:0.6,exp:'partial_E',desc:'Esposto a Levante'},
     {key:'santaMarg',name:'Santa Margherita L.',sf:0.3,exp:'sheltered_gulf',desc:'Golfo Tigullio'},
 ];
-const ROUTE_5T=[
+// ---- 3 ROTTE 5 TERRE ----
+// Rotta A: Diretta (offshore) — veloce, esposta
+const R5_A={id:'A',name:'Diretta (offshore)',color:'#F87171',dash:'',nm:28,desc:'Taglio al largo. Più veloce ma esposizione PIENA a mare aperto. Solo con mare calmo.',
+wps:[
     {lat:44.303,lon:9.210,name:'Portofino',nm:0,riparo:'porto',esp:false},
+    {lat:44.240,lon:9.400,name:'Offshore Tigullio',nm:12,riparo:'nessuno',esp:true},
+    {lat:44.145,lon:9.654,name:'Monterosso',nm:23,riparo:'limitato',esp:false},
+    {lat:44.098,lon:9.738,name:'Riomaggiore',nm:28,riparo:'nessuno',esp:false},
+]};
+// Rotta B: Costiera via Sestri Levante — bilanciata
+const R5_B={id:'B',name:'Costiera via Sestri',color:'#FBBF24',dash:'8,6',nm:32,desc:'Costeggia il Tigullio (riparato) fino a Sestri, poi costiera. Buon compromesso.',
+wps:[
+    {lat:44.303,lon:9.210,name:'Portofino',nm:0,riparo:'porto',esp:false},
+    {lat:44.317,lon:9.323,name:'Chiavari',nm:6,riparo:'porto',esp:false},
     {lat:44.270,lon:9.398,name:'Sestri Levante',nm:10,riparo:'porto',esp:false},
     {lat:44.235,lon:9.490,name:'Moneglia',nm:16,riparo:'limitato',esp:true},
     {lat:44.170,lon:9.612,name:'Levanto',nm:22,riparo:'porto',esp:true},
     {lat:44.145,lon:9.654,name:'Monterosso',nm:25,riparo:'limitato',esp:false},
-    {lat:44.098,lon:9.738,name:'Riomaggiore',nm:30,riparo:'nessuno',esp:false},
-];
+    {lat:44.098,lon:9.738,name:'Riomaggiore',nm:32,riparo:'nessuno',esp:false},
+]};
+// Rotta C: Sottocosta stretta — più sicura, più lenta
+const R5_C={id:'C',name:'Sottocosta stretta',color:'#34D399',dash:'4,4',nm:33,desc:'Massima vicinanza alla costa. Più lenta ma con più punti di riparo. Ideale con vento moderato.',
+wps:[
+    {lat:44.303,lon:9.210,name:'Portofino',nm:0,riparo:'porto',esp:false},
+    {lat:44.334,lon:9.211,name:'Santa Margherita',nm:2,riparo:'porto',esp:false},
+    {lat:44.317,lon:9.323,name:'Chiavari',nm:8,riparo:'porto',esp:false},
+    {lat:44.270,lon:9.398,name:'Sestri Levante',nm:12,riparo:'porto',esp:false},
+    {lat:44.243,lon:9.470,name:'Riva Trigoso',nm:15,riparo:'limitato',esp:false},
+    {lat:44.235,lon:9.490,name:'Moneglia',nm:17,riparo:'limitato',esp:true},
+    {lat:44.190,lon:9.560,name:'Bonassola',nm:21,riparo:'limitato',esp:true},
+    {lat:44.170,lon:9.612,name:'Levanto',nm:24,riparo:'porto',esp:true},
+    {lat:44.145,lon:9.654,name:'Monterosso',nm:27,riparo:'limitato',esp:false},
+    {lat:44.098,lon:9.738,name:'Riomaggiore',nm:33,riparo:'nessuno',esp:false},
+]};
+const ROUTES_5T=[R5_A,R5_B,R5_C];
+
+// Raccomandazione rotta in base alle condizioni
+function recommendRoute(data){
+    // Valuta il punto offshore (il più esposto) per decidere
+    const offKey='44.24_9.4';
+    const h=nowH();
+    const offD=data[offKey]?.tH?.[h];
+    const ev=offD?evH(offD,S10):{ov:0};
+    if(ev.ov===0) return {route:R5_A,reason:'Mare calmo — rotta diretta possibile'};
+    if(ev.ov===1) return {route:R5_B,reason:'Condizioni moderate — meglio costeggiare il Tigullio'};
+    // Valuta se anche sottocosta è fattibile
+    const monKey='44.235_9.49';
+    const monD=data[monKey]?.tH?.[h];
+    const monEv=monD?evH(monD,S10):{ov:2};
+    if(monEv.ov<=1) return {route:R5_C,reason:'Mare mosso al largo — rotta sottocosta raccomandata'};
+    return {route:null,reason:'Condizioni non sicure — NON SI NAVIGA'};
+}
 const S75={vento:{v:10,g:16},raffiche:{v:15,g:22},onde:{v:0.5,g:1},vis:{v:5000,g:2000}};
 const S10={vento:{v:12,g:20},raffiche:{v:18,g:28},onde:{v:0.75,g:1.5},vis:{v:5000,g:2000}};
 const VENTI=[
@@ -339,6 +392,8 @@ setMode(mode);
 // ================================================================
 const map=L.map('map',{center:[44.318,9.190],zoom:14,zoomControl:false,attributionControl:false});
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(map);
+// Carta nautica OpenSeaMap — boe, fari, segnali marittimi
+L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',{maxZoom:18,opacity:0.85}).addTo(map);
 const canvas=$('windCanvas'),ctx=canvas.getContext('2d');
 let mapLayers=[],windField=[],animId=null;
 function resizeCanvas(){
@@ -637,13 +692,39 @@ function renderWR(dir,speed){
 // ================================================================
 // RENDER: 5 TERRE
 // ================================================================
+let selectedRoute = null; // R5_A, R5_B, R5_C or null
+let chartDepth = null;
+
 function render5T(data){
     const dep=RS.dep;
+    // Time picker
     $('tpA').innerHTML=[7,8,9,10,11].map(h=>`<button class="tp-b ${h===dep?'a':''}" data-h="${h}">${p2(h)}</button>`).join('');
     $('tpA').querySelectorAll('.tp-b').forEach(b=>{b.onclick=()=>{RS.dep=parseInt(b.dataset.h);render5T(data);}});
-    const evals=ROUTE_5T.map(wp=>{const k=`${wp.lat}_${wp.lon}`;const hr=Math.round(dep+wp.nm/12);const d=data[k]?.tH?.[hr];const ev=d?evH(d,S10):{ov:-1,sc:{}};if(ev.ov===1&&wp.riparo==='nessuno'){ev.ov=2;ev._sh=true;}return{wp,hour:hr,data:d,ev};});
+
+    // Raccomandazione
+    const rec=recommendRoute(data);
+    if(!selectedRoute) selectedRoute=rec.route||R5_B;
+    const recEl=$('r5Rec');
+    if(rec.route){
+        recEl.innerHTML=`<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px">✓</span><div><div style="font-size:13px;font-weight:800;color:var(--${rec.route===R5_A?'green':rec.route===R5_B?'amber':'green'})">${rec.route.name}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${rec.reason}</div></div></div>`;
+    } else {
+        recEl.innerHTML=`<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px">✕</span><div><div style="font-size:13px;font-weight:800;color:var(--red)">NON SI NAVIGA</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${rec.reason}</div></div></div>`;
+    }
+
+    // Route selector buttons
+    $('r5Sel').innerHTML=ROUTES_5T.map(r=>`<button style="flex:1;padding:10px 6px;border-radius:10px;border:2px solid ${r===selectedRoute?r.color:'var(--border2)'};background:${r===selectedRoute?r.color+'18':'var(--card)'};color:${r===selectedRoute?r.color:'var(--text3)'};font-family:Inter,sans-serif;font-size:10px;font-weight:700;cursor:pointer;min-height:44px;line-height:1.3;" onclick="selectedRoute=R5_${r.id};render5T(APP.data)"><span style="font-size:14px;display:block">${r.id}</span>${r.name}<br><span style="font-weight:500;opacity:.7">${r.nm}mn</span></button>`).join('');
+
+    // Evaluate selected route
+    const route=selectedRoute||R5_B;
+    const wps=route.wps;
+    $('r5RouteTitle').textContent=`Rotta ${route.id} · ${route.name}`;
+
+    const evals=wps.map(wp=>{const k=`${wp.lat}_${wp.lon}`;const hr=Math.round(dep+wp.nm/12);const d=data[k]?.tH?.[hr];const ev=d?evH(d,S10):{ov:-1,sc:{}};if(ev.ov===1&&wp.riparo==='nessuno'){ev.ov=2;ev._sh=true;}return{wp,hour:hr,data:d,ev};});
     const worst=Math.max(...evals.filter(e=>e.ev.ov>=0).map(e=>e.ev.ov));
-    $('rSt').className='st '+sC(worst);$('rI').textContent=sI(worst);$('rT').textContent=worst===0?'SI PUÒ NAVIGARE':worst===1?'CON CAUTELA':'NON SI NAVIGA';$('rS').textContent='';$('rX').textContent='';
+    $('rSt').className='st '+sC(worst);$('rI').textContent=sI(worst);$('rT').textContent=worst===0?'SI PUÒ NAVIGARE':worst===1?'CON CAUTELA':'NON SI NAVIGA';
+    $('rS').textContent=`Rotta ${route.id} · ${route.nm} mn · ${route.desc}`;$('rX').textContent='';
+
+    // Render waypoint strip
     let html='<div class="rs">';
     evals.forEach((e,i)=>{const cls=e.ev.ov>=0?sC(e.ev.ov):'gray';const d=e.data;const last=i===evals.length-1;
     let lc=cls;if(!last&&evals[i+1]?.ev.ov>=0)lc=sC(Math.max(e.ev.ov<0?0:e.ev.ov,evals[i+1].ev.ov));
@@ -651,8 +732,56 @@ function render5T(data){
     if(d)html+=`<div class="rm"><span>${d.emoji}</span><span>💨${d.wind.toFixed(0)}kn</span><span>🌊${d.waves!=null?d.waves.toFixed(1)+'m':'--'}</span></div>`;
     else html+=`<div class="rm" style="color:var(--text3)">N/D</div>`;
     if(e.ev._sh)html+=`<span class="rb c">✕ Nessun ridosso</span>`;else if(e.wp.esp&&e.ev.ov>=1)html+=`<span class="rb w">⚠ Esposto</span>`;
+    if(e.wp.riparo==='porto')html+=`<span class="rb s">🏠 Porto</span>`;
+    else if(e.wp.riparo==='limitato')html+=`<span class="rb s">◐ Ridosso limitato</span>`;
     html+=`</div></div>`;});
     html+='</div>';$('r5A').innerHTML=html;
+
+    // Draw routes on map
+    render5TMap(evals, route);
+
+    // Fetch depth for selected route (async, won't block)
+    if(mode==='cmd') fetchAndRenderDepth(route);
+}
+
+function render5TMap(evals, activeRoute){
+    clearLayers();
+    // Draw all 3 routes on map
+    ROUTES_5T.forEach(r=>{
+        const path=r.wps.map(w=>[w.lat,w.lon]);
+        const isActive=r===activeRoute;
+        const line=L.polyline(path,{color:r.color,weight:isActive?4:2,opacity:isActive?0.8:0.3,dashArray:r.dash||null}).addTo(map);
+        mapLayers.push(line);
+    });
+    // Active route waypoint markers
+    evals.forEach(e=>{
+        const color=e.ev.ov===0?'#34D399':e.ev.ov===1?'#FBBF24':'#F87171';
+        const m=L.circleMarker([e.wp.lat,e.wp.lon],{radius:6,color,fillColor:color,fillOpacity:.9,weight:2,opacity:.6}).addTo(map);
+        m.bindPopup(`<strong>${e.wp.name}</strong><br>${e.data?'💨'+e.data.wind.toFixed(0)+'kn 🌊'+(e.data.waves!=null?e.data.waves.toFixed(1)+'m':'--'):'N/D'}`);
+        mapLayers.push(m);
+    });
+    map.fitBounds(activeRoute.wps.map(w=>[w.lat,w.lon]),{padding:[30,30]});
+}
+
+async function fetchAndRenderDepth(route){
+    try{
+        const pts=route.wps.map(w=>`${w.lat},${w.lon}`).join('|');
+        const r=await fetch(`/api/depth?points=${encodeURIComponent(pts)}`);
+        if(!r.ok)return;
+        const data=await r.json();
+        if(!data.results)return;
+        const labels=route.wps.map(w=>w.name);
+        const depths=data.results.map(r=>Math.abs(r.elevation||0));
+        if(chartDepth)chartDepth.destroy();
+        chartDepth=new Chart($('chDepth'),{
+            type:'bar',
+            data:{labels,datasets:[{label:'Profondità (m)',data:depths,backgroundColor:depths.map(d=>d<10?'rgba(248,113,113,.4)':d<30?'rgba(251,191,36,.3)':'rgba(96,165,250,.3)'),borderColor:depths.map(d=>d<10?'#F87171':d<30?'#FBBF24':'#60A5FA'),borderWidth:1,borderRadius:4}]},
+            options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+            plugins:{legend:{display:false},tooltip:{backgroundColor:'#1A2332',titleColor:'#F1F5F9',bodyColor:'#94A3B8',bodyFont:{size:10,family:'Inter'}}},
+            scales:{x:{title:{display:true,text:'metri',color:'#64748B',font:{size:8}},ticks:{color:'#64748B',font:{size:8}},grid:{color:'rgba(255,255,255,.03)'}},
+            y:{ticks:{color:'#94A3B8',font:{size:9,family:'Inter'}},grid:{display:false}}}}
+        });
+    }catch(e){console.warn('Depth fetch failed:',e);}
 }
 
 // ================================================================
@@ -680,7 +809,7 @@ function sw(t){aTab=t;localStorage.setItem('mm_t',t);
 $('t1').classList.toggle('a',t==='ptf');$('t2').classList.toggle('a',t==='5t');$('t3').classList.toggle('a',t==='dash');
 $('pPtf').classList.toggle('a',t==='ptf');$('p5T').classList.toggle('a',t==='5t');$('pDash').classList.toggle('a',t==='dash');
 if(t==='ptf')map.fitBounds(Object.values(PTS).map(p=>[p.lat,p.lon]),{padding:[20,20]});
-if(t==='5t'){const b=ROUTE_5T.map(w=>[w.lat,w.lon]);map.fitBounds(b,{padding:[30,30]});}
+if(t==='5t'&&selectedRoute){map.fitBounds(selectedRoute.wps.map(w=>[w.lat,w.lon]),{padding:[30,30]});}
 if(t==='dash'){if(APP.usage)renderDash(APP.usage);renderHistoryDates();}
 setTimeout(()=>map.invalidateSize(),100);
 if(t==='ptf'&&mode==='cmd'&&APP.data)renderCharts();}
@@ -691,7 +820,8 @@ if(t==='ptf'&&mode==='cmd'&&APP.data)renderCharts();}
 async function loadData(){
     $('btnR').classList.add('spin');
     try{
-        const allPts=[...Object.values(PTS),...ROUTE_5T.map(w=>({lat:w.lat,lon:w.lon}))];
+        const r5Pts=ROUTES_5T.flatMap(r=>r.wps.map(w=>({lat:w.lat,lon:w.lon})));
+        const allPts=[...Object.values(PTS),...r5Pts];
         const unique=[];const seen=new Set();for(const p of allPts){const k=`${p.lat}_${p.lon}`;if(!seen.has(k)){seen.add(k);unique.push({lat:p.lat,lon:p.lon});}}
         const [wB,mB,usage]=await Promise.all([fetchBW(unique),fetchBM(unique).catch(()=>null),fetchUsage()]);
         APP.data=normBatch(wB,mB,unique);APP.usage=usage;

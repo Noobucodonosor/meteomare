@@ -201,6 +201,29 @@ app.get('/api/usage', (req, res) => {
     });
 });
 
+// ================================================================
+// BATIMETRIA — profondità mare (GEBCO via OpenTopoData, gratis)
+// ================================================================
+app.get('/api/depth', async (req, res) => {
+    const { points } = req.query; // "lat1,lon1|lat2,lon2|..."
+    if (!points) return res.status(400).json({ error: 'points required (lat,lon|lat,lon)' });
+
+    const cacheKey = `depth_${points}`;
+    const cached = cacheGet(cacheKey);
+    if (cached) return res.json(cached);
+
+    try {
+        const url = `https://api.opentopodata.org/v1/gebco2020?locations=${points}`;
+        const r = await fetch(url);
+        if (!r.ok) throw new Error(`GEBCO ${r.status}`);
+        const data = await r.json();
+        cacheSet(cacheKey, data);
+        res.json(data);
+    } catch (e) {
+        res.status(502).json({ error: 'GEBCO non raggiungibile', detail: e.message });
+    }
+});
+
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', stormglass: !!SG_KEY, cache_entries: cache.size, uptime: process.uptime() });
 });
