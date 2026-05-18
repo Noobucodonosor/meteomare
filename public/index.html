@@ -318,7 +318,7 @@ let mode = localStorage.getItem('mm_mode') || 'dir';
 function setMode(m){mode=m;localStorage.setItem('mm_mode',m);
 document.body.classList.toggle('dir',m==='dir');
 $('mDir').classList.toggle('a',m==='dir');$('mCmd').classList.toggle('a',m==='cmd');
-if(m==='cmd'&&APP.data)renderCharts();}
+if(m==='cmd'&&APP.data){renderCharts();renderTable(APP.data);}}
 setMode(mode);
 
 // ================================================================
@@ -328,26 +328,65 @@ const map=L.map('map',{center:[44.318,9.190],zoom:14,zoomControl:false,attributi
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(map);
 const canvas=$('windCanvas'),ctx=canvas.getContext('2d');
 let mapLayers=[],windField=[],animId=null;
-function resizeCanvas(){canvas.width=canvas.offsetWidth*(window.devicePixelRatio||1);canvas.height=canvas.offsetHeight*(window.devicePixelRatio||1);ctx.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);}
-resizeCanvas();window.addEventListener('resize',resizeCanvas);map.on('move zoom',drawWF);
+function resizeCanvas(){
+    const w=canvas.parentElement.offsetWidth,h=canvas.parentElement.offsetHeight;
+    if(w===0||h===0)return;
+    const dpr=window.devicePixelRatio||1;
+    canvas.width=w*dpr;canvas.height=h*dpr;
+    canvas.style.width=w+'px';canvas.style.height=h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize',resizeCanvas);
+map.on('moveend zoomend resize',()=>{resizeCanvas();if(windField.length)animWF();});
 function clearLayers(){mapLayers.forEach(l=>map.removeLayer(l));mapLayers=[];}
 let pulse=0;
-function animWF(){pulse=(pulse+0.015)%Math.PI;ctx.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight);const a=0.5+0.2*Math.sin(pulse*2);
-for(const p of windField){const px=map.latLngToContainerPoint([p.lat,p.lon]);const color=p.speed>16?'#F87171':p.speed>10?'#FBBF24':'#34D399';const len=Math.min(8+p.speed*1.2,28);const rad=p.dir*Math.PI/180;
-ctx.save();ctx.translate(px.x,px.y);ctx.rotate(rad);ctx.globalAlpha=a;ctx.beginPath();ctx.moveTo(0,-len/2);ctx.lineTo(0,len/2);ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineCap='round';ctx.stroke();
-ctx.beginPath();ctx.moveTo(0,-len/2);ctx.lineTo(-4,-len/2+8);ctx.lineTo(4,-len/2+8);ctx.closePath();ctx.fillStyle=color;ctx.fill();ctx.restore();}
+function animWF(){pulse=(pulse+0.02)%Math.PI;
+ctx.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight);
+const a=0.65+0.2*Math.sin(pulse*2);
+for(const p of windField){
+    const px=map.latLngToContainerPoint([p.lat,p.lon]);
+    // Skip if off-screen
+    if(px.x<-20||px.x>canvas.offsetWidth+20||px.y<-20||px.y>canvas.offsetHeight+20)continue;
+    const color=p.speed>16?'#F87171':p.speed>10?'#FBBF24':'#34D399';
+    const len=Math.min(14+p.speed*1.8,40);
+    const rad=p.dir*Math.PI/180;
+    ctx.save();ctx.translate(px.x,px.y);ctx.rotate(rad);ctx.globalAlpha=a;
+    // Shaft
+    ctx.beginPath();ctx.moveTo(0,-len/2);ctx.lineTo(0,len/2);
+    ctx.strokeStyle=color;ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();
+    // Head
+    ctx.beginPath();ctx.moveTo(0,-len/2);ctx.lineTo(-6,-len/2+12);ctx.lineTo(6,-len/2+12);ctx.closePath();
+    ctx.fillStyle=color;ctx.fill();
+    // Speed label
+    ctx.globalAlpha=a*0.8;ctx.fillStyle='#fff';ctx.font='bold 9px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillText(p.speed.toFixed(0),0,len/2+12);
+    ctx.restore();
+}
 animId=requestAnimationFrame(animWF);}
 function drawWF(){if(animId)return;animWF();}
 function startWF(){if(!animId)animId=requestAnimationFrame(animWF);}
 function drawMapPtf(sfRisk,prRisk){
     clearLayers();
-    Object.values(PTS).forEach(p=>{const m=L.circleMarker([p.lat,p.lon],{radius:4,color:'#D4A853',fillColor:'#D4A853',fillOpacity:.7,weight:1,opacity:.4}).addTo(map);m.bindPopup(`<strong>${p.name}</strong>`);mapLayers.push(m);});
-    mapLayers.push(L.polyline(ROUTE_W.map(r=>[PTS[r.key].lat,PTS[r.key].lon]),{color:'#D4A853',weight:2,opacity:.4,dashArray:'5,5'}).addTo(map));
-    mapLayers.push(L.polyline(ROUTE_E.map(r=>[PTS[r.key].lat,PTS[r.key].lon]),{color:'#60A5FA',weight:2,opacity:.4,dashArray:'5,5'}).addTo(map));
+    // Markers con nome visibile
+    Object.entries(PTS).forEach(([key,p])=>{
+        const m=L.circleMarker([p.lat,p.lon],{radius:6,color:'#D4A853',fillColor:'#D4A853',fillOpacity:.9,weight:2,opacity:.6}).addTo(map);
+        m.bindPopup(`<strong>${p.name}</strong>`);
+        // Label sempre visibile per punti chiave
+        if(['portofino','sanFruttuoso','puntaChiappa','santaMarg'].includes(key)){
+            const label=L.marker([p.lat,p.lon],{icon:L.divIcon({className:'',html:`<div style="color:#D4A853;font-size:9px;font-weight:700;font-family:Inter,sans-serif;text-shadow:0 0 4px #000,0 0 8px #000;white-space:nowrap;pointer-events:none;position:relative;top:-18px;left:10px">${p.name}</div>`,iconSize:[0,0]})}).addTo(map);
+            mapLayers.push(label);
+        }
+        mapLayers.push(m);
+    });
+    // Rotte
+    mapLayers.push(L.polyline(ROUTE_W.map(r=>[PTS[r.key].lat,PTS[r.key].lon]),{color:'#D4A853',weight:3,opacity:.5,dashArray:'8,6'}).addTo(map));
+    mapLayers.push(L.polyline(ROUTE_E.map(r=>[PTS[r.key].lat,PTS[r.key].lon]),{color:'#60A5FA',weight:3,opacity:.5,dashArray:'8,6'}).addTo(map));
+    // Zone risacca — BEN VISIBILI
     const sfCol=sfRisk>=2?'#F87171':sfRisk===1?'#FBBF24':'#34D399';
-    mapLayers.push(L.circle([PTS.sanFruttuoso.lat,PTS.sanFruttuoso.lon],{radius:80,color:sfCol,fillColor:sfCol,fillOpacity:sfRisk>=2?.25:.08,weight:1,opacity:.5}).addTo(map));
+    mapLayers.push(L.circle([PTS.sanFruttuoso.lat,PTS.sanFruttuoso.lon],{radius:150,color:sfCol,fillColor:sfCol,fillOpacity:sfRisk>=2?.35:sfRisk===1?.2:.08,weight:2,opacity:.7}).addTo(map));
+    if(sfRisk>=2){mapLayers.push(L.circle([PTS.sanFruttuoso.lat,PTS.sanFruttuoso.lon],{radius:250,color:sfCol,fillColor:sfCol,fillOpacity:.1,weight:1,opacity:.3}).addTo(map));}
     const prCol=prRisk>=2?'#F87171':prRisk===1?'#FBBF24':'#34D399';
-    mapLayers.push(L.circle([PTS.portofino.lat,PTS.portofino.lon],{radius:60,color:prCol,fillColor:prCol,fillOpacity:prRisk>=1?.15:.05,weight:1,opacity:.4}).addTo(map));
+    mapLayers.push(L.circle([PTS.portofino.lat,PTS.portofino.lon],{radius:120,color:prCol,fillColor:prCol,fillOpacity:prRisk>=1?.2:.06,weight:2,opacity:.5}).addTo(map));
 }
 
 // ================================================================
@@ -412,11 +451,12 @@ const chartDark={color:'#94A3B8',borderColor:'rgba(255,255,255,.06)'};
 
 // Custom plugin: threshold bands
 const bandPlugin={id:'bands',beforeDraw(chart){
+    if(!chart.chartArea||!chart.scales?.y)return;
     const{ctx,chartArea:{left,right,top,bottom},scales:{y}}=chart;
-    const bands=chart.options.plugins.bands;if(!bands)return;
+    const bands=chart.config.options?.plugins?.bands?.ranges;if(!bands||!Array.isArray(bands))return;
     bands.forEach(b=>{
-        const yTop=y.getPixelForValue(b.max);const yBot=y.getPixelForValue(b.min);
-        ctx.fillStyle=b.color;ctx.fillRect(left,Math.max(yTop,top),right-left,Math.min(yBot,bottom)-Math.max(yTop,top));
+        const yTop=Math.max(y.getPixelForValue(b.max),top);const yBot=Math.min(y.getPixelForValue(b.min),bottom);
+        if(yBot>yTop){ctx.fillStyle=b.color;ctx.fillRect(left,yTop,right-left,yBot-yTop);}
     });
 }};
 Chart.register(bandPlugin);
@@ -431,7 +471,7 @@ function makeWindChart(canvasId, hours, data, soglie){
     ]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
     plugins:{legend:{display:true,labels:{color:'#94A3B8',font:{size:9,family:'Inter'},boxWidth:12,padding:8}},
     tooltip:{backgroundColor:'#1A2332',titleColor:'#F1F5F9',bodyColor:'#94A3B8',borderColor:'rgba(255,255,255,.1)',borderWidth:1,titleFont:{size:10,family:'Inter'},bodyFont:{size:10,family:'Inter'},padding:8},
-    bands:[{min:0,max:soglie.vento.v,color:'rgba(52,211,153,.04)'},{min:soglie.vento.v,max:soglie.vento.g,color:'rgba(251,191,36,.04)'},{min:soglie.vento.g,max:50,color:'rgba(248,113,113,.04)'}]},
+    bands:{ranges:[{min:0,max:soglie.vento.v,color:'rgba(52,211,153,.1)'},{min:soglie.vento.v,max:soglie.vento.g,color:'rgba(251,191,36,.1)'},{min:soglie.vento.g,max:50,color:'rgba(248,113,113,.1)'}]}},
     scales:{x:{ticks:{color:'#64748B',font:{size:8,family:'Inter'},maxRotation:0},grid:{color:'rgba(255,255,255,.03)'}},
     y:{beginAtZero:true,ticks:{color:'#64748B',font:{size:8,family:'Inter'}},grid:{color:'rgba(255,255,255,.03)'}}}}};
     return config;
@@ -535,7 +575,10 @@ function renderPtf(data){
     // MAP
     drawMapPtf(sfR.risk,prR.risk);
     windField=[];for(const[,pt] of Object.entries(PTS)){const k=`${pt.lat}_${pt.lon}`;const d=data[k]?.tH?.[h];if(d)windField.push({lat:pt.lat,lon:pt.lon,speed:d.wind,dir:d.windDir});}
-    startWF();map.setView([44.318,9.190],14);
+    resizeCanvas();startWF();
+    // Centra la mappa su TUTTI i punti del promontorio
+    const allLatLngs=Object.values(PTS).map(p=>[p.lat,p.lon]);
+    map.fitBounds(allLatLngs,{padding:[20,20]});
 
     // COMANDANTE: charts + table
     if(mode==='cmd'){renderCharts();renderTable(data);}
@@ -606,7 +649,7 @@ let aTab=localStorage.getItem('mm_t')||'ptf';
 function sw(t){aTab=t;localStorage.setItem('mm_t',t);
 $('t1').classList.toggle('a',t==='ptf');$('t2').classList.toggle('a',t==='5t');$('t3').classList.toggle('a',t==='dash');
 $('pPtf').classList.toggle('a',t==='ptf');$('p5T').classList.toggle('a',t==='5t');$('pDash').classList.toggle('a',t==='dash');
-if(t==='ptf')map.setView([44.318,9.190],14);
+if(t==='ptf')map.fitBounds(Object.values(PTS).map(p=>[p.lat,p.lon]),{padding:[20,20]});
 if(t==='5t'){const b=ROUTE_5T.map(w=>[w.lat,w.lon]);map.fitBounds(b,{padding:[30,30]});}
 if(t==='dash'){if(APP.usage)renderDash(APP.usage);renderHistoryDates();}
 setTimeout(()=>map.invalidateSize(),100);
