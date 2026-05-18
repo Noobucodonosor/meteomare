@@ -10,23 +10,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-:root{--bg:#0B1120;--bg2:#111827;--card:#1A2332;--card2:#1F2A3D;--border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.1);--text:#F1F5F9;--text2:#94A3B8;--text3:#64748B;--gold:#D4A853;--green:#34D399;--green2:#059669;--gg:rgba(52,211,153,.15);--amber:#FBBF24;--amber2:#D97706;--ag:rgba(251,191,36,.12);--red:#F87171;--red2:#DC2626;--rg:rgba(248,113,113,.12);}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
-header{background:var(--bg2);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;border-bottom:1px solid var(--border);}
+:root{--bg:#0B1120;--bg2:#111827;--card:#1A2332;--card2:#1F2A3D;--border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.1);--text:#F1F5F9;--text2:#94A3B8;--text3:#64748B;--gold:#D4A853;--green:#34D399;--green2:#059669;--gg:rgba(52,211,153,.15);--amber:#FBBF24;--amber2:#D97706;--ag:rgba(251,191,36,.12);--red:#F87171;--red2:#DC2626;--rg:rgba(248,113,113,.12);
+--sab:env(safe-area-inset-bottom,0px);--sat:env(safe-area-inset-top,0px);}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased;padding-bottom:calc(56px + var(--sab));overscroll-behavior-y:contain;}
+header{background:var(--bg2);padding:10px 16px;padding-top:calc(10px + var(--sat));display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;border-bottom:1px solid var(--border);}
 .hl{display:flex;align-items:center;gap:8px;}.hl .logo{font-size:20px;}.hl h1{font-size:14px;font-weight:700;}.hl .sub{font-size:8px;color:var(--gold);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;}
 .hbtns{display:flex;gap:6px;align-items:center;}
-.bi{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text2);width:34px;height:34px;border-radius:8px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.bi:active{background:rgba(255,255,255,.1);}.bi.spin{animation:sp 1s linear infinite;}.bi.active{background:var(--gold);color:var(--bg);border-color:var(--gold);}
+.bi{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text2);min-width:44px;min-height:44px;width:44px;height:44px;border-radius:10px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.bi:active{background:rgba(255,255,255,.12);transform:scale(.93);}.bi.spin{animation:sp 1s linear infinite;}.bi.active{background:var(--gold);color:var(--bg);border-color:var(--gold);}
 @keyframes sp{to{transform:rotate(360deg);}}
 /* MODE TOGGLE */
-.mode-tog{display:flex;background:var(--card);border-radius:8px;border:1px solid var(--border2);overflow:hidden;}
-.mode-btn{padding:6px 10px;font-size:10px;font-weight:700;color:var(--text3);background:none;border:none;cursor:pointer;letter-spacing:.3px;}
+.mode-tog{display:flex;background:var(--card);border-radius:10px;border:1px solid var(--border2);overflow:hidden;}
+.mode-btn{padding:8px 12px;font-size:11px;font-weight:700;color:var(--text3);background:none;border:none;cursor:pointer;letter-spacing:.3px;min-height:44px;}
 .mode-btn.a{background:var(--gold);color:var(--bg);}
-.rule{background:var(--red2);text-align:center;padding:5px;font-size:8px;font-weight:700;letter-spacing:1.5px;color:white;}
-.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);}
-.tb{flex:1;padding:10px 4px;text-align:center;font-size:9px;font-weight:700;letter-spacing:.3px;color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;}
-.tb.a{color:var(--gold);border-bottom-color:var(--gold);}
+.rule{background:var(--red2);text-align:center;padding:6px;font-size:9px;font-weight:700;letter-spacing:1.5px;color:white;}
+/* BOTTOM TABS */
+.tabs{display:flex;background:var(--bg2);border-top:1px solid var(--border);position:fixed;bottom:0;left:0;right:0;z-index:300;padding-bottom:var(--sab);}
+.tb{flex:1;padding:12px 4px 8px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--text3);background:none;border:none;border-top:2px solid transparent;cursor:pointer;min-height:48px;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.tb.a{color:var(--gold);border-top-color:var(--gold);}
+.tb-icon{font-size:18px;line-height:1;}
 #mapWrap{position:relative;width:100%;height:35vh;min-height:240px;}
 #map{width:100%;height:100%;z-index:1;}
 #windCanvas{position:absolute;inset:0;z-index:10;pointer-events:none;}
@@ -113,19 +116,28 @@ body.dir .cmd{display:none!important;}
 .dtable td:first-child{text-align:left;color:var(--text);font-weight:600;}
 .dtable tr.now-row{background:rgba(212,168,83,.06);}
 .dtable tr.now-row td:first-child{color:var(--gold);}
-/* WIND ROSE */
-.wr-w{background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;}
-.wr{position:relative;width:220px;height:220px;margin:0 auto;}
-.wr-ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--border2);}
-.wr-d{position:absolute;font-size:7px;font-weight:700;text-align:center;color:var(--text3);line-height:1.1;text-transform:uppercase;letter-spacing:.3px;transition:color .3s;}
+/* WIND ROSE + LIVE COMPASS */
+.wr-w{background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);margin-bottom:12px;}
+.wr{position:relative;width:260px;height:260px;margin:0 auto;}
+.wr-ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--border2);transition:transform .1s linear;}
+.wr-ring.live{border-color:var(--gold);box-shadow:0 0 20px rgba(212,168,83,.1);}
+.wr-d{position:absolute;font-size:8px;font-weight:700;text-align:center;color:var(--text3);line-height:1.1;text-transform:uppercase;letter-spacing:.3px;transition:color .3s;}
 .wr-d.act{color:var(--amber);}
-.wr-d i{display:block;font-size:6px;font-weight:600;font-style:normal;letter-spacing:.5px;margin-top:1px;}
-.wr-arr{position:absolute;top:50%;left:50%;width:2px;height:70px;transform-origin:bottom center;margin-left:-1px;margin-top:-70px;border-radius:2px;background:var(--amber);transition:transform .6s ease-out;box-shadow:0 0 6px var(--ag);}
-.wr-arr::after{content:'';position:absolute;top:-4px;left:-4px;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:8px solid var(--amber);}
-.wr-c{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;background:var(--bg);width:50px;height:50px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--border2);}
-.wr-sp{font-size:18px;font-weight:900;}.wr-u{font-size:7px;color:var(--text3);font-weight:600;letter-spacing:1px;}
-.wr-name{text-align:center;margin-top:8px;font-size:12px;font-weight:700;color:var(--amber);}
-.wr-desc{text-align:center;font-size:9px;color:var(--text3);margin-top:3px;line-height:1.5;max-width:240px;margin-left:auto;margin-right:auto;}
+.wr-d i{display:block;font-size:7px;font-weight:600;font-style:normal;letter-spacing:.5px;margin-top:1px;}
+.wr-arr{position:absolute;top:50%;left:50%;width:3px;height:85px;transform-origin:bottom center;margin-left:-1.5px;margin-top:-85px;border-radius:3px;background:var(--amber);transition:transform .6s ease-out;box-shadow:0 0 8px var(--ag);}
+.wr-arr::after{content:'';position:absolute;top:-5px;left:-5px;border-left:6.5px solid transparent;border-right:6.5px solid transparent;border-bottom:10px solid var(--amber);}
+.wr-c{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;background:var(--bg);width:60px;height:60px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--border2);}
+.wr-sp{font-size:22px;font-weight:900;}.wr-u{font-size:8px;color:var(--text3);font-weight:600;letter-spacing:1px;}
+.wr-heading{font-size:9px;color:var(--gold);font-weight:700;margin-top:1px;display:none;}
+.wr-c.live .wr-heading{display:block;}.wr-c.live .wr-u{display:none;}
+.wr-name{text-align:center;margin-top:10px;font-size:13px;font-weight:700;color:var(--amber);}
+.wr-desc{text-align:center;font-size:10px;color:var(--text3);margin-top:4px;line-height:1.5;max-width:260px;margin-left:auto;margin-right:auto;}
+.compass-btn{display:block;margin:12px auto 0;padding:10px 20px;background:var(--card2);border:1px solid var(--border2);border-radius:10px;color:var(--text2);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;min-height:44px;transition:all .2s;letter-spacing:.3px;}
+.compass-btn:active{transform:scale(.96);}
+.compass-btn.live{background:var(--gold);color:var(--bg);border-color:var(--gold);}
+/* PULL TO REFRESH indicator */
+.ptr{text-align:center;padding:12px;font-size:10px;color:var(--gold);font-weight:600;display:none;}
+.ptr.show{display:block;}
 /* BEAUFORT */
 .bf{background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);}
 .bf-r{display:flex;align-items:center;padding:4px 0;gap:6px;}.bf-r:not(:last-child){border-bottom:1px solid var(--border);}
@@ -160,11 +172,6 @@ footer strong{color:var(--text2);}
 </div>
 </header>
 <div class="rule">Nel dubbio, non si esce.</div>
-<div class="tabs">
-<button class="tb a" onclick="sw('ptf')" id="t1">Promontorio</button>
-<button class="tb" onclick="sw('5t')" id="t2">5 Terre</button>
-<button class="tb" onclick="sw('dash')" id="t3">Dashboard</button>
-</div>
 <div id="mapWrap"><div id="map"></div><canvas id="windCanvas"></canvas></div>
 <div class="src-bar" id="srcBar"><span class="sd off"></span>Caricamento...</div>
 <div id="loadV" class="loading"><div class="ld-s"></div><div class="ld-t">Interrogazione modelli...</div></div>
@@ -196,7 +203,7 @@ footer strong{color:var(--text2);}
 </div>
 
 <div class="sec">Rosa dei Venti</div>
-<div class="wr-w"><div class="wr" id="wrR"><div class="wr-ring"></div><div class="wr-arr" id="wrA"></div><div class="wr-c"><span class="wr-sp" id="wrS">--</span><span class="wr-u">KN</span></div></div><div class="wr-name" id="wrN">--</div><div class="wr-desc" id="wrD"></div></div>
+<div class="wr-w"><div class="wr" id="wrR"><div class="wr-ring" id="wrRing"></div><div class="wr-arr" id="wrA"></div><div class="wr-c" id="wrC"><span class="wr-sp" id="wrS">--</span><span class="wr-u">KN</span><span class="wr-heading" id="wrH">---°</span></div></div><div class="wr-name" id="wrN">--</div><div class="wr-desc" id="wrD"></div><button class="compass-btn" id="compassBtn" onclick="toggleCompass()">🧭 Abilita bussola live</button></div>
 
 <div class="sec">Condizioni Portofino</div>
 <div class="mg" id="pM"></div>
@@ -245,6 +252,12 @@ STORMGLASS_DAILY_LIMIT=500</pre></div>
 </main>
 
 <footer><strong>Strumento di supporto alla decisione.</strong> La decisione finale spetta SEMPRE al comandante. Nel dubbio, non si esce.</footer>
+
+<div class="tabs">
+<button class="tb a" onclick="sw('ptf')" id="t1"><span class="tb-icon">🏔</span>Promontorio</button>
+<button class="tb" onclick="sw('5t')" id="t2"><span class="tb-icon">🧭</span>5 Terre</button>
+<button class="tb" onclick="sw('dash')" id="t3"><span class="tb-icon">📊</span>Dashboard</button>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -600,9 +613,26 @@ function renderRoute(id,route,data,hour,soglie,icon,dist){
 }
 
 function mC(l,sc,v,u,det){return`<div class="mc ${sc>=0?sC(sc):''}"><div class="mc-l">${l}</div><div class="mc-v">${v} <span class="mc-u">${u}</span></div>${det?`<div class="mc-d">${det}</div>`:''}</div>`;}
-function renderWR(dir,speed){const rose=$('wrR');if(!rose.querySelector('.wr-d')){VENTI.forEach(v=>{const el=document.createElement('div');el.className='wr-d';el.dataset.deg=v.deg;const r=90,x=110+r*Math.sin(v.deg*Math.PI/180),y=110-r*Math.cos(v.deg*Math.PI/180);el.style.cssText=`left:${x}px;top:${y}px;transform:translate(-50%,-50%);position:absolute;`;el.innerHTML=`${v.s}<i>${v.name}</i>`;rose.appendChild(el);});}
-const act=windName(dir);rose.querySelectorAll('.wr-d').forEach(el=>{el.classList.toggle('act',parseInt(el.dataset.deg)===act.deg);});
-$('wrA').style.transform=`rotate(${dir}deg)`;$('wrS').textContent=speed.toFixed(0);$('wrN').textContent=`${act.name} (${act.s})`;$('wrD').textContent=act.desc;}
+function renderWR(dir,speed){
+    const ring=$('wrRing');
+    if(!ring.querySelector('.wr-d')){
+        VENTI.forEach(v=>{
+            const el=document.createElement('div');el.className='wr-d';el.dataset.deg=v.deg;
+            const r=108, cx=130, cy=130;
+            const x=cx+r*Math.sin(v.deg*Math.PI/180);
+            const y=cy-r*Math.cos(v.deg*Math.PI/180);
+            el.style.cssText=`left:${x}px;top:${y}px;transform:translate(-50%,-50%);position:absolute;`;
+            el.innerHTML=`${v.s}<i>${v.name}</i>`;
+            ring.appendChild(el);
+        });
+    }
+    const act=windName(dir);
+    ring.querySelectorAll('.wr-d').forEach(el=>{el.classList.toggle('act',parseInt(el.dataset.deg)===act.deg);});
+    $('wrA').style.transform=`rotate(${dir}deg)`;
+    $('wrS').textContent=speed.toFixed(0);
+    $('wrN').textContent=`${act.name} (${act.s})`;
+    $('wrD').textContent=act.desc;
+}
 
 // ================================================================
 // RENDER: 5 TERRE
@@ -671,6 +701,129 @@ async function loadData(){
     $('loadV').style.display='none';$('btnR').classList.remove('spin');
     if(timer)clearTimeout(timer);timer=setTimeout(loadData,REFRESH);
 }
+
+// ================================================================
+// LIVE COMPASS (magnetometro telefono)
+// ================================================================
+let compassActive = false;
+let deviceHeading = null;
+let compassSmooth = null; // smoothed heading
+
+function handleOrientation(e) {
+    let h = null;
+    if (e.webkitCompassHeading != null) {
+        // iOS: gradi da nord magnetico (0-360, senso orario)
+        h = e.webkitCompassHeading;
+    } else if (e.alpha != null && e.absolute) {
+        // Android con bussola assoluta
+        h = (360 - e.alpha) % 360;
+    } else if (e.alpha != null) {
+        // Android fallback
+        h = (360 - e.alpha) % 360;
+    }
+    if (h == null) return;
+
+    // Smooth (media mobile per evitare tremolii)
+    if (compassSmooth == null) compassSmooth = h;
+    else {
+        let diff = h - compassSmooth;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        compassSmooth = (compassSmooth + diff * 0.15 + 360) % 360;
+    }
+    deviceHeading = compassSmooth;
+    updateCompassDisplay();
+}
+
+function updateCompassDisplay() {
+    if (!compassActive || deviceHeading == null) return;
+    const ring = $('wrRing');
+    const center = $('wrC');
+
+    // La rosa ruota in senso opposto all'heading del device:
+    // così il Nord (0°) punta sempre verso il nord reale
+    ring.style.transform = `rotate(${-deviceHeading}deg)`;
+
+    // Heading nel centro
+    $('wrH').textContent = `${Math.round(deviceHeading)}°`;
+
+    // Ruota anche le label con il ring (sono children, ereditano)
+    // Le label devono contra-ruotare per restare leggibili
+    ring.querySelectorAll('.wr-d').forEach(el => {
+        const deg = parseInt(el.dataset.deg);
+        el.style.transform = `translate(-50%,-50%) rotate(${deviceHeading}deg)`;
+    });
+}
+
+async function toggleCompass() {
+    const btn = $('compassBtn');
+    if (compassActive) {
+        // Disattiva
+        compassActive = false;
+        window.removeEventListener('deviceorientation', handleOrientation);
+        window.removeEventListener('deviceorientationabsolute', handleOrientation);
+        btn.textContent = '🧭 Abilita bussola live';
+        btn.classList.remove('live');
+        $('wrRing').classList.remove('live');
+        $('wrRing').style.transform = '';
+        $('wrC').classList.remove('live');
+        // Ripristina label
+        $('wrRing').querySelectorAll('.wr-d').forEach(el => {
+            el.style.transform = 'translate(-50%,-50%)';
+        });
+        return;
+    }
+
+    // iOS 13+ richiede permesso esplicito
+    if (typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function') {
+        try {
+            const perm = await DeviceOrientationEvent.requestPermission();
+            if (perm !== 'granted') {
+                btn.textContent = '⚠ Permesso negato';
+                setTimeout(() => { btn.textContent = '🧭 Abilita bussola live'; }, 2000);
+                return;
+            }
+        } catch (e) {
+            btn.textContent = '⚠ Errore permessi';
+            setTimeout(() => { btn.textContent = '🧭 Abilita bussola live'; }, 2000);
+            return;
+        }
+    }
+
+    // Attiva
+    compassActive = true;
+    compassSmooth = null;
+    btn.textContent = '🧭 BUSSOLA LIVE — tocca per spegnere';
+    btn.classList.add('live');
+    $('wrRing').classList.add('live');
+    $('wrC').classList.add('live');
+
+    // Prova prima deviceorientationabsolute (Android, più preciso)
+    if ('ondeviceorientationabsolute' in window) {
+        window.addEventListener('deviceorientationabsolute', handleOrientation);
+    } else {
+        window.addEventListener('deviceorientation', handleOrientation);
+    }
+}
+
+// ================================================================
+// PULL TO REFRESH (touch gesture)
+// ================================================================
+let ptrStartY = 0;
+let ptrActive = false;
+document.addEventListener('touchstart', e => {
+    if (window.scrollY === 0) ptrStartY = e.touches[0].clientY;
+}, { passive: true });
+document.addEventListener('touchmove', e => {
+    if (ptrStartY && e.touches[0].clientY - ptrStartY > 80 && window.scrollY === 0) {
+        ptrActive = true;
+    }
+}, { passive: true });
+document.addEventListener('touchend', () => {
+    if (ptrActive) { ptrActive = false; ptrStartY = 0; loadData(); }
+    else ptrStartY = 0;
+}, { passive: true });
 
 // ================================================================
 // INIT
