@@ -342,12 +342,37 @@ body.nav-active .tc,body.nav-active .tabs,body.nav-active footer,body.nav-active
 <div class="sec">Seleziona rotta</div>
 <div id="r5Sel" style="display:flex;gap:6px;margin-bottom:12px;"></div>
 
+<div class="sec">Condizioni punto critico</div>
+<div class="mg" id="r5Metrics"></div>
+
+<div id="r5TideCard" style="display:none;background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);margin-bottom:12px;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+<div style="font-size:10px;font-weight:700;">Maree durante navigazione</div>
+<div style="font-size:10px;color:var(--text3);" id="r5WaterTemp"></div>
+</div>
+<div id="r5TideData" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+</div>
+
+<div id="r5IspraCard" style="display:none;background:var(--card);border-radius:12px;padding:10px 14px;border:1px solid var(--border);margin-bottom:12px;">
+<div style="display:flex;justify-content:space-between;align-items:center;">
+<div style="font-size:10px;font-weight:700;">Boa La Spezia (misurato)</div>
+<div style="font-size:12px;font-weight:800;" id="r5IspraWave">--</div>
+</div>
+</div>
+
 <div class="sec" id="r5RouteTitle">Waypoint</div>
 <div class="route-sec" id="r5A"></div>
 
-<div class="cmd">
-<div class="sec">Profondità lungo rotta (GEBCO)</div>
+<div class="sec">Vento lungo rotta</div>
+<div class="chart-wrap"><canvas id="chRouteWind"></canvas></div>
+
+<div class="sec">Profondita lungo rotta (GEBCO)</div>
 <div class="chart-wrap"><canvas id="chDepth"></canvas></div>
+
+<div class="sec">Navigazione assistita</div>
+<div style="background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;text-align:center;">
+<button onclick="setMode('cmd')" style="width:100%;padding:14px;background:rgba(41,121,255,.15);border:2px solid rgba(41,121,255,.3);border-radius:12px;color:#448AFF;font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;cursor:pointer;letter-spacing:2px;min-height:56px;">⚓ AVVIA COMANDANTE</button>
+<div style="font-size:9px;color:var(--text3);margin-top:6px;">GPS + condizioni in tempo reale lungo la rotta selezionata</div>
 </div>
 </main>
 
@@ -374,9 +399,9 @@ STORMGLASS_DAILY_LIMIT=500</pre></div>
 <div id="navMap" style="position:absolute;inset:0;"></div>
 <div class="nav-hud">
 <div class="nav-gauges">
-<div class="ng" id="ngWind"><div class="ng-icon">💨</div><div class="ng-v" id="nvWind">--</div><div class="ng-u">KN</div><div class="ng-l">Vento</div></div>
-<div class="ng" id="ngWaves"><div class="ng-icon">🌊</div><div class="ng-v" id="nvWaves">--</div><div class="ng-u">M</div><div class="ng-l">Onde</div></div>
-<div class="ng" id="ngSOG"><div class="ng-icon">⚓</div><div class="ng-v" id="nvSOG">--</div><div class="ng-u">KN</div><div class="ng-l">SOG</div></div>
+<div class="ng" id="ngWind"><div class="ng-v" id="nvWind">--</div><div class="ng-u">KN</div><div class="ng-l">Vento</div></div>
+<div class="ng" id="ngWaves"><div class="ng-v" id="nvWaves">--</div><div class="ng-u">M</div><div class="ng-l">Onde</div></div>
+<div class="ng" id="ngSOG"><div class="ng-v" id="nvSOG">--</div><div class="ng-u">KN</div><div class="ng-l">Velocita</div></div>
 </div>
 </div>
 </div>
@@ -907,6 +932,37 @@ function makeSeaChart(canvasId, hours, data){
     return config;
 }
 
+let chartRouteWind = null;
+function renderRouteWindChart(evals, dep) {
+    if (chartRouteWind) chartRouteWind.destroy();
+    const canvas = $('chRouteWind');
+    if (!canvas) return;
+    const labels = evals.map(e => e.wp.name.split(' ')[0]); // short names
+    const windData = evals.map(e => e.data?.wind ?? null);
+    const gustData = evals.map(e => e.data?.gusts ?? null);
+    const waveData = evals.map(e => e.data?.waves ?? null);
+    chartRouteWind = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                { label: 'Vento (kn)', data: windData, backgroundColor: 'rgba(251,191,36,.6)', borderRadius: 4, barPercentage: 0.6 },
+                { label: 'Raffiche (kn)', data: gustData, backgroundColor: 'rgba(248,113,113,.4)', borderRadius: 4, barPercentage: 0.6 },
+                { label: 'Onde (m)', data: waveData, backgroundColor: 'rgba(96,165,250,.5)', borderRadius: 4, barPercentage: 0.6, yAxisID: 'y1' },
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#94A3B8', font: { size: 9, family: 'Inter' }, boxWidth: 10, padding: 6 } } },
+            scales: {
+                x: { ticks: { color: '#64748B', font: { size: 7, family: 'Inter' }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,.03)' } },
+                y: { beginAtZero: true, title: { display: true, text: 'kn', color: '#64748B', font: { size: 8 } }, ticks: { color: '#64748B', font: { size: 8 } }, grid: { color: 'rgba(255,255,255,.03)' } },
+                y1: { position: 'right', beginAtZero: true, title: { display: true, text: 'm', color: '#64748B', font: { size: 8 } }, ticks: { color: '#64748B', font: { size: 8 } }, grid: { display: false } },
+            }
+        }
+    });
+}
+
 function renderCharts(){
     if(!APP.data)return;
     const ptfKey=`${PTS.portofino.lat}_${PTS.portofino.lon}`;
@@ -1130,11 +1186,51 @@ function render5T(data){
     html+=`</div></div>`;});
     html+='</div>';$('r5A').innerHTML=html;
 
+    // Metrics for worst waypoint
+    const worstPt = evals.find(e => e.ev.ov === worst && e.data);
+    if (worstPt?.data) {
+        const wd = worstPt.data;
+        $('r5Metrics').innerHTML = [
+            mC('Vento', eU(wd.wind, S10.vento), wd.wind.toFixed(0), 'kn', `${compass(wd.windDir)} · ${worstPt.wp.name}`),
+            mC('Raffiche', eU(wd.gusts, S10.raffiche), wd.gusts.toFixed(0), 'kn', ''),
+            mC('Onde', wd.waves != null ? eU(wd.waves, S10.onde) : -1, wd.waves != null ? wd.waves.toFixed(1) : '--', 'm', ''),
+            mC('Visibilita', wd.vis != null ? eD(wd.vis, S10.vis) : -1, wd.vis >= 1000 ? (wd.vis / 1000).toFixed(0) : wd.vis, wd.vis >= 1000 ? 'km' : 'm', ''),
+        ].join('');
+    }
+
+    // Tides for 5 Terre
+    if (APP.tides?.days?.[0]?.tides?.length) {
+        $('r5TideCard').style.display = 'block';
+        const today = APP.tides.days[0];
+        if (today.waterTemp != null) $('r5WaterTemp').textContent = `Acqua ${today.waterTemp.toFixed(0)}°C`;
+        const now = new Date();
+        $('r5TideData').innerHTML = today.tides.map(t => {
+            const tTime = t.time.split(' ').pop() || t.time;
+            const isHigh = t.type === 'HIGH';
+            const tDate = new Date(today.date + 'T' + tTime);
+            const isNext = tDate > now;
+            return `<div style="flex:1;min-width:60px;text-align:center;padding:6px;background:${isNext ? 'rgba(255,255,255,.03)' : 'transparent'};border-radius:6px;">
+                <div style="font-size:14px;font-weight:800;color:${isHigh ? 'var(--amber)' : 'var(--green)'}">${isHigh ? '↑' : '↓'} ${t.height.toFixed(1)}m</div>
+                <div style="font-size:9px;color:var(--text3)">${isHigh ? 'Alta' : 'Bassa'} ${tTime}</div>
+            </div>`;
+        }).join('');
+    }
+
+    // ISPRA buoy for 5 Terre
+    if (APP.ispra?.waveH != null) {
+        $('r5IspraCard').style.display = 'block';
+        $('r5IspraWave').textContent = APP.ispra.waveH.toFixed(1) + ' m';
+        $('r5IspraWave').style.color = APP.ispra.waveH > 1 ? 'var(--red)' : APP.ispra.waveH > 0.5 ? 'var(--amber)' : 'var(--green)';
+    }
+
+    // Wind along route chart
+    renderRouteWindChart(evals, dep);
+
     // Draw routes on map
     render5TMap(evals, route);
 
-    // Fetch depth for selected route (async, won't block)
-    if(mode==='cmd') fetchAndRenderDepth(route);
+    // Depth chart
+    fetchAndRenderDepth(route);
 }
 
 function render5TMap(evals, activeRoute){
@@ -1531,11 +1627,6 @@ function toggleNav() {
 }
 
 function startNav() {
-    if (!('geolocation' in navigator)) {
-        alert('GPS non disponibile su questo dispositivo');
-        return;
-    }
-
     // Pick active route: if on 5T tab and a route is selected, use it; else use Rotta Ovest
     if (aTab === '5t' && selectedRoute) {
         navRoute = selectedRoute;
@@ -1545,49 +1636,74 @@ function startNav() {
 
     navActive = true;
     document.body.classList.add('nav-active');
-    $('btnNav').classList.add('active');
     requestWakeLock();
 
     // Init nav map
     if (!navMap) {
-        navMap = L.map('navMap', { center: [44.31, 9.19], zoom: 15, zoomControl: false, attributionControl: false });
+        navMap = L.map('navMap', { center: [44.31, 9.19], zoom: 14, zoomControl: false, attributionControl: false });
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(navMap);
         L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', { maxZoom: 18, opacity: 0.85 }).addTo(navMap);
     }
-    setTimeout(() => navMap.invalidateSize(), 100);
+    setTimeout(() => {
+        navMap.invalidateSize();
+        // Fit to route bounds
+        if (navRoute.wps?.length) {
+            navMap.fitBounds(navRoute.wps.map(w => [w.lat, w.lon]), { padding: [30, 30] });
+        }
+    }, 200);
 
     // Draw route on nav map
     navClearLayers();
     if (navRoute.wps) {
         const coords = navRoute.wps.map(w => [w.lat, w.lon]);
-        navLayers.push(L.polyline(coords, { color: '#D4A853', weight: 3, opacity: 0.6, dashArray: '8,6' }).addTo(navMap));
-        navRoute.wps.forEach(w => {
-            const m = L.circleMarker([w.lat, w.lon], { radius: 5, color: '#D4A853', fillColor: '#D4A853', fillOpacity: 0.8, weight: 1 }).addTo(navMap);
+        navLayers.push(L.polyline(coords, { color: '#D4A853', weight: 3, opacity: 0.7, dashArray: '8,6' }).addTo(navMap));
+        navRoute.wps.forEach((w, i) => {
+            const isFirst = i === 0, isLast = i === navRoute.wps.length - 1;
+            const r = isFirst || isLast ? 7 : 4;
+            const col = isFirst ? '#00E676' : isLast ? '#FF3333' : '#D4A853';
+            const m = L.circleMarker([w.lat, w.lon], { radius: r, color: col, fillColor: col, fillOpacity: 0.9, weight: 1 }).addTo(navMap);
             m.bindPopup(`<strong>${w.name}</strong>`);
             navLayers.push(m);
+            // Label for first/last
+            if (isFirst || isLast) {
+                const label = L.marker([w.lat, w.lon], { icon: L.divIcon({ className: '', html: `<div style="color:${col};font-family:Oswald,sans-serif;font-size:11px;font-weight:600;text-shadow:0 0 6px #000,0 0 12px #000;white-space:nowrap;position:relative;top:-18px;left:10px;letter-spacing:1px;">${w.name}</div>`, iconSize: [0, 0] }) }).addTo(navMap);
+                navLayers.push(label);
+            }
         });
     }
 
-    // Start GPS
-    navWatchId = navigator.geolocation.watchPosition(
-        pos => {
-            navPos = {
-                lat: pos.coords.latitude,
-                lon: pos.coords.longitude,
-                speed: pos.coords.speed != null ? pos.coords.speed * MS_TO_KN : null,
-                heading: pos.coords.heading,
-                accuracy: pos.coords.accuracy
-            };
-            // Use compass heading if GPS heading unavailable
-            if (navPos.heading == null && deviceHeading != null) navPos.heading = deviceHeading;
+    // Populate gauges immediately with Portofino data (before GPS kicks in)
+    if (APP.data) {
+        const ptfKey = `${PTS.portofino.lat}_${PTS.portofino.lon}`;
+        const h = nowH();
+        const d = APP.data[ptfKey]?.tH?.[h];
+        if (d) {
+            // Set default position to Portofino
+            navPos = { lat: PTS.portofino.lat, lon: PTS.portofino.lon, speed: null, heading: null };
             updateNavDisplay();
-        },
-        err => {
-            console.warn('GPS error:', err.message);
-            $('nvSOG').textContent = 'GPS!';
-        },
-        { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
-    );
+            $('nvSOG').textContent = '--';
+            $('navAheadRow').innerHTML = '<span style="color:rgba(255,255,255,.3)">Attivare GPS per condizioni avanti</span>';
+        }
+    }
+
+    // Start GPS (if available)
+    if ('geolocation' in navigator) {
+        navWatchId = navigator.geolocation.watchPosition(
+            pos => {
+                navPos = {
+                    lat: pos.coords.latitude,
+                    lon: pos.coords.longitude,
+                    speed: pos.coords.speed != null ? pos.coords.speed * MS_TO_KN : null,
+                    heading: pos.coords.heading,
+                    accuracy: pos.coords.accuracy
+                };
+                if (navPos.heading == null && deviceHeading != null) navPos.heading = deviceHeading;
+                updateNavDisplay();
+            },
+            err => { console.warn('GPS:', err.message); },
+            { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+        );
+    }
 
     // Enable compass if not active
     if (!compassActive) toggleCompass();
