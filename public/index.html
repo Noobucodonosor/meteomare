@@ -153,6 +153,31 @@ body.dir .cmd{display:none!important;}
 .sun{display:flex;justify-content:center;gap:20px;padding:6px;font-size:10px;color:var(--text3);}
 footer{padding:14px;text-align:center;max-width:520px;margin:0 auto;font-size:8px;color:var(--text3);line-height:1.7;}
 footer strong{color:var(--text2);}
+/* NAV MODE */
+.nav-screen{display:none;flex-direction:column;height:calc(100vh - 50px);height:calc(100dvh - 50px);}
+body.nav-active .nav-screen{display:flex;}
+body.nav-active .tc,body.nav-active .tabs,body.nav-active footer,body.nav-active .rule,body.nav-active #mapWrap,body.nav-active #srcBar,body.nav-active #loadV{display:none!important;}
+body.nav-active header .hbtns>*:not(#btnNav){display:none;}
+body.nav-active .hl .sub{display:none;}
+#navMap{flex:1;min-height:0;z-index:1;}
+.nav-hud{background:var(--bg);padding:8px 12px;padding-bottom:calc(8px + var(--sab));}
+.nav-big{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;}
+.nb{background:var(--card);border-radius:14px;padding:12px 8px;text-align:center;border:1px solid var(--border);}
+.nb-v{font-size:32px;font-weight:900;line-height:1;letter-spacing:-1px;}
+.nb-u{font-size:11px;font-weight:700;color:var(--text3);margin-top:2px;}
+.nb-l{font-size:9px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+.nb.green .nb-v{color:var(--green);}.nb.amber .nb-v{color:var(--amber);}.nb.red .nb-v{color:var(--red);}
+.nav-ahead{background:var(--card);border-radius:12px;padding:10px 14px;border:1px solid var(--border);margin-bottom:8px;}
+.nav-ahead-h{font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
+.nav-ahead-row{display:flex;gap:12px;font-size:12px;color:var(--text);flex-wrap:wrap;}
+.nav-ahead-row span{display:flex;align-items:center;gap:4px;}
+.nav-alert{background:var(--rg);border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:6px 10px;margin-top:6px;font-size:11px;font-weight:700;color:var(--red);}
+.nav-info{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);padding:4px 0;}
+.nav-info-l{font-weight:700;}.nav-info-r{color:var(--text3);}
+.nav-wind-rel{text-align:center;font-size:10px;color:var(--text3);font-weight:600;margin-top:2px;}
+#btnNav{background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.3);color:#60A5FA;}
+#btnNav.active{background:#2563EB;border-color:#2563EB;color:#fff;animation:navPulse 2s ease-in-out infinite;}
+@keyframes navPulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4);}50%{box-shadow:0 0 0 8px rgba(37,99,235,0);}}
 .loading{text-align:center;padding:50px 20px;}
 .ld-s{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 10px;}
 .ld-t{font-size:10px;color:var(--text3);}
@@ -168,6 +193,9 @@ footer strong{color:var(--text2);}
 <div class="hl"><span class="logo">⛵</span><div><h1>MeteoMare</h1><div class="sub">Promontorio di Portofino</div></div></div>
 <div class="hbtns">
 <div class="mode-tog"><button class="mode-btn a" id="mDir" onclick="setMode('dir')">👔 Direttrice</button><button class="mode-btn" id="mCmd" onclick="setMode('cmd')">⚓ Comandante</button></div>
+<button class="bi" id="btnEMOD" onclick="toggleEMODnet()" title="Batimetria HD">🗺</button>
+<button class="bi" id="btnAIS" onclick="toggleAIS()" title="Traffico AIS">🚢</button>
+<button class="bi" id="btnNav" onclick="toggleNav()">⚓</button>
 <button class="bi" onclick="loadData()" id="btnR">↻</button>
 </div>
 </header>
@@ -178,11 +206,20 @@ footer strong{color:var(--text2);}
 
 <!-- ============ PROMONTORIO ============ -->
 <main class="tc a" id="pPtf">
+<div id="modelBanner" style="display:none;background:var(--ag);border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:11px;font-weight:700;color:var(--amber);text-align:center;"></div>
 <div class="st green" id="pSt"><div class="st-i" id="pI">✓</div><div class="st-t" id="pT">ANALISI</div><div class="st-s" id="pS"></div><div class="st-x" id="pX"></div></div>
 <div class="sun" id="pSun"></div>
 
 <div class="sec">San Fruttuoso · Risacca banchina</div>
 <div class="sf ok" id="sfC"><div class="sf-h"><div><div class="sf-n">San Fruttuoso</div><div class="sf-l">Banchina Abbazia</div></div><div><div class="sf-v" id="sfV">--</div><div class="sf-dk" id="sfD">--</div></div></div><div class="sf-ms"><div class="sf-m"><div class="sf-mv" id="sfSH">--</div><div class="sf-ml">Swell</div></div><div class="sf-m"><div class="sf-mv" id="sfSP">--</div><div class="sf-ml">Periodo</div></div><div class="sf-m"><div class="sf-mv" id="sfSD">--</div><div class="sf-ml">Dir.</div></div></div><div class="sf-info" id="sfI"></div></div>
+
+<div id="tideCard" style="display:none;background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+<div style="font-size:11px;font-weight:800;">Maree · Portofino</div>
+<div style="font-size:10px;color:var(--text3);" id="tideWaterTemp"></div>
+</div>
+<div id="tideData" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+</div>
 
 <div class="sm-row">
 <div class="sm"><span class="sm-icon">🏠</span><div><div class="sm-name">Porto Portofino</div><div class="sm-val" id="prV">--</div></div><span class="sm-badge ok" id="prB">--</span></div>
@@ -216,6 +253,25 @@ footer strong{color:var(--text2);}
 
 <div class="sec cmd">Correnti marine</div>
 <div class="mg cmd" id="pCurr"></div>
+
+<div id="arpalCard" class="cmd" style="display:none;background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;">
+<div style="font-size:11px;font-weight:800;margin-bottom:8px;">Stazioni ARPAL · Liguria Levante</div>
+<div id="arpalData" style="font-size:10px;color:var(--text2);line-height:1.6;"></div>
+<div id="arpalBulletin" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,.02);border-radius:6px;font-size:9px;color:var(--text3);line-height:1.5;border:1px solid var(--border);max-height:120px;overflow-y:auto;"></div>
+</div>
+
+<div id="ispraCard" class="cmd" style="display:none;background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;">
+<div style="font-size:11px;font-weight:800;margin-bottom:8px;">Boa ISPRA · La Spezia</div>
+<div id="ispraData" style="font-size:10px;color:var(--text2);line-height:1.6;"></div>
+<div id="ispraWarn" style="display:none;" class="nav-alert"></div>
+</div>
+
+<div class="cmd" style="margin-bottom:12px;">
+<button id="btnSeaLegs" onclick="askSeaLegs()" style="width:100%;padding:12px;background:var(--card);border:1px solid var(--border2);border-radius:10px;color:var(--text2);font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;min-height:44px;">🤖 Chiedi seconda opinione (SeaLegs AI)</button>
+<div id="sealegsResult" style="display:none;margin-top:8px;background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);">
+<div id="sealegsContent" style="font-size:11px;line-height:1.6;"></div>
+</div>
+</div>
 
 <div class="sec">Area Marina Protetta</div>
 <div style="background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);margin-bottom:12px;">
@@ -280,6 +336,24 @@ STORMGLASS_DAILY_LIMIT=500</pre></div>
 </main>
 
 <footer><strong>Strumento di supporto alla decisione.</strong> La decisione finale spetta SEMPRE al comandante. Nel dubbio, non si esce.</footer>
+
+<!-- ============ NAVIGAZIONE ============ -->
+<div class="nav-screen" id="navScreen">
+<div id="navMap"></div>
+<div class="nav-hud" id="navHud">
+<div class="nav-big">
+<div class="nb" id="nbWind"><div class="nb-v" id="nvWind">--</div><div class="nb-u">KN</div><div class="nb-l">Vento</div></div>
+<div class="nb" id="nbWaves"><div class="nb-v" id="nvWaves">--</div><div class="nb-u">m</div><div class="nb-l">Onde</div></div>
+<div class="nb" id="nbSOG"><div class="nb-v" id="nvSOG">--</div><div class="nb-u">KN</div><div class="nb-l">SOG</div></div>
+</div>
+<div class="nav-ahead" id="navAhead">
+<div class="nav-ahead-h">Davanti a te</div>
+<div class="nav-ahead-row" id="navAheadRow">Seleziona una rotta per vedere le condizioni avanti</div>
+</div>
+<div class="nav-info"><span class="nav-info-l" id="nvHeading">Heading ---°</span><span class="nav-info-r" id="nvWP">-- | --mn</span></div>
+<div class="nav-wind-rel" id="nvWindRel">Vento relativo: ---</div>
+</div>
+</div>
 
 <div class="tabs">
 <button class="tb a" onclick="sw('ptf')" id="t1"><span class="tb-icon">🏔</span>Promontorio</button>
@@ -430,6 +504,10 @@ const map=L.map('map',{center:[44.318,9.190],zoom:14,zoomControl:false,attributi
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(map);
 // Carta nautica OpenSeaMap — boe, fari, segnali marittimi
 L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',{maxZoom:18,opacity:0.85}).addTo(map);
+// EMODnet high-res bathymetry (115m, European waters) — toggled via button
+const emodnetLayer = L.tileLayer.wms('https://ows.emodnet-bathymetry.eu/wms',{layers:'mean_atlas_land',format:'image/png',transparent:true,opacity:0.35,maxZoom:18});
+let emodnetOn = false;
+function toggleEMODnet(){emodnetOn=!emodnetOn;if(emodnetOn){emodnetLayer.addTo(map);}else{map.removeLayer(emodnetLayer);}$('btnEMOD').classList.toggle('active',emodnetOn);}
 const canvas=$('windCanvas'),ctx=canvas.getContext('2d');
 let mapLayers=[],windField=[],animId=null;
 function resizeCanvas(){
@@ -512,8 +590,135 @@ function drawMapPtf(sfRisk,prRisk){
 // ================================================================
 async function fetchBW(pts){const r=await fetch('/api/batch-weather?points='+encodeURIComponent(JSON.stringify(pts)));if(!r.ok)throw 0;return r.json();}
 async function fetchBM(pts){const r=await fetch('/api/batch-marine?points='+encodeURIComponent(JSON.stringify(pts)));if(!r.ok)throw 0;return r.json();}
+async function fetchMetNo(pts){const r=await fetch('/api/metno?points='+encodeURIComponent(JSON.stringify(pts)));if(!r.ok)throw 0;return r.json();}
+async function fetchTides(lat,lon){const r=await fetch(`/api/tides?lat=${lat}&lon=${lon}`);if(!r.ok)throw 0;return r.json();}
+async function fetchARPAL(){const r=await fetch('/api/arpal');if(!r.ok)throw 0;return r.json();}
+async function fetchISPRA(){const r=await fetch('/api/ispra');if(!r.ok)throw 0;return r.json();}
 async function fetchUsage(){try{return(await fetch('/api/usage')).json();}catch{return null;}}
 async function fetchHistoryDates(){try{return(await fetch('/api/history/dates')).json();}catch{return{dates:[]};}}
+
+// Merge MET Norway data into APP.data for cross-validation
+function mergeMetNo(mnData) {
+    if (!mnData || !APP.data) return;
+    const today = todayS();
+    for (const pt of mnData) {
+        const key = `${pt.lat}_${pt.lon}`;
+        if (!APP.data[key]) continue;
+        for (const [timeKey, vals] of Object.entries(pt.hourly)) {
+            const d = timeKey.substring(0, 10);
+            const h = parseInt(timeKey.substring(11, 13));
+            if (d === today && APP.data[key].tH?.[h]) {
+                APP.data[key].tH[h].mn_wind = vals.wind;
+                APP.data[key].tH[h].mn_gusts = vals.gusts;
+                APP.data[key].tH[h].mn_windDir = vals.windDir;
+                APP.data[key].tH[h].mn_temp = vals.temp;
+                APP.data[key].tH[h].mn_pressure = vals.pressure;
+            }
+        }
+    }
+}
+
+// Check model disagreement for a point
+function modelDisagreement(d) {
+    if (!d || d.mn_wind == null) return null;
+    const diff = Math.abs(d.wind - d.mn_wind);
+    if (diff > 5) return { diff: diff.toFixed(0), om: d.wind.toFixed(0), mn: d.mn_wind.toFixed(0) };
+    return null;
+}
+
+function renderTides() {
+    if (!APP.tides?.days?.length) return;
+    const card = $('tideCard');
+    card.style.display = 'block';
+    const today = APP.tides.days[0];
+    if (today.waterTemp != null) {
+        $('tideWaterTemp').textContent = `🌡 Acqua ${today.waterTemp.toFixed(1)}°C`;
+    }
+    let html = '';
+    const now = new Date();
+    for (const t of today.tides || []) {
+        const isHigh = t.type === 'HIGH';
+        const tTime = t.time.split(' ').pop() || t.time;
+        // Check if this tide is next
+        const tDate = new Date(today.date + 'T' + tTime);
+        const isNext = tDate > now;
+        html += `<div style="flex:1;min-width:70px;background:${isNext ? 'rgba(255,255,255,.04)' : 'transparent'};border-radius:8px;padding:8px;text-align:center;border:1px solid ${isNext ? 'var(--border2)' : 'var(--border)'};">
+            <div style="font-size:16px;">${isHigh ? '↑' : '↓'}</div>
+            <div style="font-size:12px;font-weight:800;color:${isHigh ? 'var(--amber)' : 'var(--green)'}">${t.height.toFixed(1)}m</div>
+            <div style="font-size:9px;color:var(--text3);font-weight:600;">${isHigh ? 'ALTA' : 'BASSA'}</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:2px;">${tTime}</div>
+        </div>`;
+    }
+    $('tideData').innerHTML = html;
+}
+
+function renderModelBanner() {
+    const banner = $('modelBanner');
+    if (!banner || !APP.data) return;
+    const ptfKey = `${PTS.portofino.lat}_${PTS.portofino.lon}`;
+    const h = nowH();
+    const d = APP.data[ptfKey]?.tH?.[h];
+    const dis = modelDisagreement(d);
+    if (dis) {
+        banner.style.display = 'block';
+        banner.innerHTML = `⚠ Modelli discordanti — Open-Meteo: ${dis.om} kn · MET Norway: ${dis.mn} kn (Δ${dis.diff} kn) — prudenza`;
+    } else if (d?.mn_wind != null) {
+        banner.style.display = 'block';
+        banner.style.background = 'var(--gg)';
+        banner.style.borderColor = 'rgba(52,211,153,.3)';
+        banner.style.color = 'var(--green)';
+        banner.innerHTML = `✓ Modelli concordi — Open-Meteo: ${d.wind.toFixed(0)} kn · MET Norway: ${d.mn_wind.toFixed(0)} kn`;
+    } else {
+        banner.style.display = 'none';
+    }
+}
+
+function renderARPAL() {
+    if (!APP.arpal) return;
+    const card = $('arpalCard');
+    card.style.display = 'block';
+    let html = '';
+    if (APP.arpal.seaBulletin) {
+        html = `<div style="color:var(--text2);line-height:1.5;">${APP.arpal.seaBulletin.substring(0, 500)}${APP.arpal.seaBulletin.length > 500 ? '...' : ''}</div>`;
+    } else if (APP.arpal.error) {
+        html = `<div style="color:var(--text3)">${APP.arpal.error}</div>`;
+    } else {
+        html = '<div style="color:var(--text3)">Bollettino non disponibile al momento</div>';
+    }
+    $('arpalData').innerHTML = html;
+}
+
+function renderISPRA() {
+    if (!APP.ispra) return;
+    const card = $('ispraCard');
+    card.style.display = 'block';
+    let html = '';
+    if (APP.ispra.waveH != null) {
+        html += `<div>Altezza onda significativa: <strong>${APP.ispra.waveH.toFixed(1)} m</strong></div>`;
+    }
+    if (APP.ispra.wavePeak != null) {
+        html += `<div>Periodo picco: <strong>${APP.ispra.wavePeak.toFixed(1)} s</strong></div>`;
+    }
+    if (APP.ispra.tideGauge?.level != null) {
+        html += `<div>Livello mare: <strong>${APP.ispra.tideGauge.level.toFixed(2)} m</strong> (sopra rif.)</div>`;
+    }
+    if (APP.ispra.note) {
+        html += `<div style="color:var(--text3);margin-top:4px;font-size:9px;">${APP.ispra.note}</div>`;
+    }
+    if (!html) html = '<div style="color:var(--text3)">Dati boa non disponibili al momento</div>';
+    $('ispraData').innerHTML = html;
+
+    // Warning if buoy wave > forecast wave by 0.3m
+    if (APP.ispra.waveH != null && APP.data) {
+        const ptfKey = `${PTS.portofino.lat}_${PTS.portofino.lon}`;
+        const h = nowH();
+        const d = APP.data[ptfKey]?.tH?.[h];
+        if (d?.waves != null && APP.ispra.waveH > d.waves + 0.3) {
+            $('ispraWarn').style.display = 'block';
+            $('ispraWarn').textContent = `⚠ Boa misura onde ${APP.ispra.waveH.toFixed(1)}m — superiore alla previsione (${d.waves.toFixed(1)}m)`;
+        }
+    }
+}
 
 function normBatch(wB,mB,pts){
     const today=todayS(),tmw=tmwS(),result={};
@@ -563,16 +768,41 @@ else if(wp.exp==='partial_E'){if(dir<60||dir>150)f*=.5;}
 else if(wp.exp==='sheltered_gulf'){if(dir>180)f*=.3;}
 m.wind=d.wind*f;m.gusts=d.gusts*f;if(d.waves!=null)m.waves=d.waves*f;return m;}
 function calcRisacca(d){
-    if(!d||d.swellH==null||d.swellD==null)return{risk:0,label:'N/D',dock:'Dati non disp.',detail:'',swellH:null,swellP:null,swellD:null};
+    if(!d||d.swellH==null||d.swellD==null)return{risk:0,label:'N/D',dock:'Dati non disp.',detail:'',swellH:null,swellP:null,swellD:null,tideEffect:null};
     let diff=Math.abs(d.swellD-200);if(diff>180)diff=360-diff;
     const direct=diff<40,partial=diff<70,period=d.swellP||0,height=d.swellH||0;
     const windInto=d.windDir!=null&&Math.abs(d.windDir-200)<60&&d.wind>8;
     let risk=0;if(direct){if(period>8||height>.5)risk=3;else if(period>6||height>.3)risk=2;else risk=1;}else if(partial){if(period>10||height>.8)risk=2;else if(period>7)risk=1;}
     if(windInto&&risk<3)risk=Math.min(risk+1,3);
+    // Fattore marea: se la marea e in salita e c'e swell da SSW, risacca amplificata
+    let tideEffect = null;
+    if(APP.tides?.days?.[0]?.tides?.length){
+        const now = new Date();
+        const today = APP.tides.days[0];
+        // Find the next HIGH tide
+        const nextHigh = today.tides.find(t => {
+            if(t.type !== 'HIGH') return false;
+            const tTime = t.time.split(' ').pop() || t.time;
+            const tDate = new Date(today.date + 'T' + tTime);
+            return tDate > new Date(now.getTime() - 3*3600*1000); // within 3h before or after
+        });
+        if(nextHigh){
+            const tTime = nextHigh.time.split(' ').pop() || nextHigh.time;
+            const tDate = new Date(today.date + 'T' + tTime);
+            const hoursToHigh = (tDate - now) / 3600000;
+            // Tide is rising if high tide is 0-3h away
+            const rising = hoursToHigh > 0 && hoursToHigh < 3;
+            const atPeak = Math.abs(hoursToHigh) < 1;
+            if((rising || atPeak) && (direct || partial) && risk < 3){
+                risk = Math.min(risk + 1, 3);
+                tideEffect = rising ? 'in salita' : 'al picco';
+            }
+        }
+    }
     const labels=['NESSUNA','LEGGERA','MODERATA','FORTE'],docks=['Attracco agevole','Attracco con attenzione','Attracco difficile','NON ATTRACCARE'];
-    let det='';if(risk>=2){const wn=windName(d.swellD);det=`Swell da ${wn.name} (${d.swellD.toFixed(0)}°) entra nella baia.`;if(period>7)det+=` Periodo lungo (${period.toFixed(0)}s) amplifica risacca.`;if(windInto)det+=` Vento aggrava.`;}
-    else if(risk===1)det='Leggero moto ondoso. Prudenza.';else det='Baia calma.';
-    return{risk,label:labels[risk],dock:docks[risk],detail:det,swellH:height,swellP:period,swellD:d.swellD};}
+    let det='';if(risk>=2){const wn=windName(d.swellD);det=`Swell da ${wn.name} (${d.swellD.toFixed(0)}°) entra nella baia.`;if(period>7)det+=` Periodo lungo (${period.toFixed(0)}s) amplifica risacca.`;if(windInto)det+=` Vento aggrava.`;if(tideEffect)det+=` Marea ${tideEffect} amplifica.`;}
+    else if(risk===1){det='Leggero moto ondoso. Prudenza.';if(tideEffect)det+=` Marea ${tideEffect}.`;}else det='Baia calma.';
+    return{risk,label:labels[risk],dock:docks[risk],detail:det,swellH:height,swellP:period,swellD:d.swellD,tideEffect};}
 function calcRisaccaPtf(d){if(!d||d.swellH==null||d.swellD==null)return{risk:0,label:'Calmo'};let diff=Math.abs(d.swellD-120);if(diff>180)diff=360-diff;let risk=0;if(diff<50){if(d.swellH>.6||(d.swellP||0)>9)risk=2;else if(d.swellH>.3||(d.swellP||0)>7)risk=1;}return{risk,label:['Calmo','Risacca leggera','Risacca'][risk]};}
 function calcPC(d){if(!d)return{speed:0,danger:false,desc:'N/D'};const isW=d.windDir>=200&&d.windDir<=310;const est=d.wind*.03*(isW?1:.3)+.2;return{speed:est,danger:est>.8,desc:est>.8?`~${est.toFixed(1)} kn — ATTENZIONE`:`~${est.toFixed(1)} kn`};}
 
@@ -700,10 +930,11 @@ function renderPtf(data){
     renderWR(ptfD.windDir,ptfD.wind);
     // TURISTI
     const uvLevel = ptfD.uv!=null ? (ptfD.uv>=8?2:ptfD.uv>=3?1:0) : -1;
+    const waterTemp = APP.tides?.days?.[0]?.waterTemp;
     $('pTourist').innerHTML=[
         mC('UV',uvLevel,ptfD.uv!=null?ptfD.uv.toFixed(0):'--','',ptfD.uv!=null?(ptfD.uv>=8?'Molto alto':ptfD.uv>=6?'Alto':ptfD.uv>=3?'Moderato':'Basso'):''),
         mC('Percepita',-1,ptfD.appTemp!=null?ptfD.appTemp.toFixed(0):'--','°C','Come ci si sente'),
-        mC('Corrente',-1,ptfD.currentV!=null?ptfD.currentV.toFixed(1):'--',ptfD.currentV!=null?'m/s':'',ptfD.currentD!=null?`Dir: ${compass(ptfD.currentD)}`:''),
+        mC('Acqua',-1,waterTemp!=null?waterTemp.toFixed(0):'--','°C',waterTemp!=null?(waterTemp>=24?'Piacevole':waterTemp>=20?'Fresca':'Fredda'):''),
         mC('Nuvole',-1,ptfD.cloudCover!=null?ptfD.cloudCover.toFixed(0):'--','%',''),
     ].join('');
 
@@ -810,7 +1041,32 @@ function render5T(data){
     const evals=wps.map(wp=>{const k=`${wp.lat}_${wp.lon}`;const hr=Math.round(dep+wp.nm/12);const d=data[k]?.tH?.[hr];const ev=d?evH(d,S10):{ov:-1,sc:{}};if(ev.ov===1&&wp.riparo==='nessuno'){ev.ov=2;ev._sh=true;}return{wp,hour:hr,data:d,ev};});
     const worst=Math.max(...evals.filter(e=>e.ev.ov>=0).map(e=>e.ev.ov));
     $('rSt').className='st '+sC(worst);$('rI').textContent=sI(worst);$('rT').textContent=worst===0?'SI PUÒ NAVIGARE':worst===1?'CON CAUTELA':'NON SI NAVIGA';
-    $('rS').textContent=`Rotta ${route.id} · ${route.nm} mn · ${route.desc}`;$('rX').textContent='';
+    $('rS').textContent=`Rotta ${route.id} · ${route.nm} mn · ${route.desc}`;
+    // Cross-validazione modelli: check if MET Norway disagrees with Open-Meteo on worst point
+    let r5Extra = '';
+    const worstEval = evals.find(e => e.ev.ov === worst && e.data);
+    if (worstEval?.data?.mn_wind != null) {
+        const diff = Math.abs(worstEval.data.wind - worstEval.data.mn_wind);
+        if (diff > 5) {
+            r5Extra += `⚠ Modelli discordanti a ${worstEval.wp.name}: Open-Meteo ${worstEval.data.wind.toFixed(0)} kn vs MET Norway ${worstEval.data.mn_wind.toFixed(0)} kn. `;
+        }
+    }
+    // ISPRA buoy warning
+    if (APP.ispra?.waveH != null && worstEval?.data?.waves != null && APP.ispra.waveH > worstEval.data.waves + 0.3) {
+        r5Extra += `⚠ Boa La Spezia: onde ${APP.ispra.waveH.toFixed(1)}m (prev. ${worstEval.data.waves.toFixed(1)}m). `;
+    }
+    // Tide info
+    if (APP.tides?.days?.[0]?.tides?.length) {
+        const now = new Date();
+        const nextTide = APP.tides.days[0].tides.find(t => {
+            const tTime = t.time.split(' ').pop() || t.time;
+            return new Date(APP.tides.days[0].date + 'T' + tTime) > now;
+        });
+        if (nextTide) {
+            r5Extra += `Marea: ${nextTide.type === 'HIGH' ? 'alta' : 'bassa'} ${nextTide.height.toFixed(1)}m alle ${(nextTide.time.split(' ').pop() || nextTide.time)}. `;
+        }
+    }
+    $('rX').textContent = r5Extra;
 
     // Render waypoint strip
     let html='<div class="rs">';
@@ -915,6 +1171,32 @@ async function loadData(){
         APP.data=normBatch(wB,mB,unique);APP.usage=usage;
         $('srcBar').innerHTML=`<span class="sd on"></span>Open-Meteo ECMWF · ${unique.length} punti · ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
         renderPtf(APP.data);render5T(APP.data);if(usage)renderDash(usage);
+        // Tier 2: enhancement fetches (non-blocking)
+        let srcParts = ['Open-Meteo'];
+        fetchMetNo(unique).then(d => {
+            mergeMetNo(d);
+            renderModelBanner();
+            srcParts.push('MET Norway');
+            $('srcBar').innerHTML=`<span class="sd on"></span>${srcParts.join(' + ')} · ${unique.length} punti · ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
+        }).catch(() => {});
+        fetchTides(PTS.portofino.lat, PTS.portofino.lon).then(d => {
+            APP.tides = d;
+            renderTides();
+            srcParts.push('Maree');
+            $('srcBar').innerHTML=`<span class="sd on"></span>${srcParts.join(' + ')} · ${unique.length} punti · ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
+        }).catch(() => {});
+        fetchARPAL().then(d => {
+            APP.arpal = d;
+            renderARPAL();
+            srcParts.push('ARPAL');
+            $('srcBar').innerHTML=`<span class="sd on"></span>${srcParts.join(' + ')} · ${unique.length} punti · ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
+        }).catch(() => {});
+        fetchISPRA().then(d => {
+            APP.ispra = d;
+            renderISPRA();
+            srcParts.push('ISPRA');
+            $('srcBar').innerHTML=`<span class="sd on"></span>${srcParts.join(' + ')} · ${unique.length} punti · ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
+        }).catch(() => {});
     }catch(e){console.error(e);$('srcBar').innerHTML='<span class="sd off"></span>Errore — riprova';}
     $('loadV').style.display='none';$('btnR').classList.remove('spin');
     if(timer)clearTimeout(timer);timer=setTimeout(loadData,REFRESH);
@@ -1022,6 +1304,422 @@ async function toggleCompass() {
         window.addEventListener('deviceorientationabsolute', handleOrientation);
     } else {
         window.addEventListener('deviceorientation', handleOrientation);
+    }
+}
+
+// ================================================================
+// SEALEGS AI
+// ================================================================
+async function askSeaLegs() {
+    const btn = $('btnSeaLegs');
+    btn.textContent = '⏳ Chiedo a SeaLegs AI...';
+    btn.disabled = true;
+    try {
+        const r = await fetch(`/api/sealegs?lat=${PTS.portofino.lat}&lon=${PTS.portofino.lon}`);
+        if (!r.ok) {
+            const err = await r.json().catch(() => ({}));
+            throw new Error(err.error || `HTTP ${r.status}`);
+        }
+        const data = await r.json();
+        $('sealegsResult').style.display = 'block';
+        // SeaLegs returns various formats; display what we get
+        let html = '';
+        if (data.classification) {
+            const cls = data.classification;
+            const col = cls === 'go' ? 'var(--green)' : cls === 'caution' ? 'var(--amber)' : 'var(--red)';
+            html += `<div style="font-size:20px;font-weight:900;color:${col};text-align:center;margin-bottom:6px;">${cls.toUpperCase()}</div>`;
+        }
+        if (data.summary) html += `<div style="color:var(--text2);">${data.summary}</div>`;
+        if (!html) html = `<pre style="font-size:9px;color:var(--text3);overflow:auto;max-height:200px;">${JSON.stringify(data, null, 2)}</pre>`;
+        $('sealegsContent').innerHTML = html;
+    } catch (e) {
+        $('sealegsResult').style.display = 'block';
+        $('sealegsContent').innerHTML = `<div style="color:var(--red);">Errore: ${e.message}</div>`;
+    }
+    btn.textContent = '🤖 Chiedi seconda opinione (SeaLegs AI)';
+    btn.disabled = false;
+}
+
+// ================================================================
+// AIS VESSEL TRAFFIC
+// ================================================================
+let aisEnabled = false;
+let aisTimer = null;
+let aisMarkers = [];
+
+function toggleAIS() {
+    aisEnabled = !aisEnabled;
+    $('btnAIS').classList.toggle('active', aisEnabled);
+    if (aisEnabled) {
+        loadAIS();
+    } else {
+        if (aisTimer) { clearTimeout(aisTimer); aisTimer = null; }
+        clearAISMarkers();
+    }
+}
+
+function clearAISMarkers() {
+    aisMarkers.forEach(m => map.removeLayer(m));
+    aisMarkers = [];
+}
+
+function vesselColor(type) {
+    if (type >= 60 && type <= 69) return '#34D399'; // passenger
+    if (type >= 70 && type <= 79) return '#60A5FA'; // cargo
+    if (type >= 80 && type <= 89) return '#F87171'; // tanker
+    if (type >= 36 && type <= 37) return '#34D399'; // sailing/pleasure
+    return '#94A3B8'; // other
+}
+
+function vesselTypeName(type) {
+    if (type >= 60 && type <= 69) return 'Passeggeri';
+    if (type >= 70 && type <= 79) return 'Cargo';
+    if (type >= 80 && type <= 89) return 'Cisterna';
+    if (type >= 36 && type <= 37) return 'Diporto';
+    if (type >= 40 && type <= 49) return 'Speciale';
+    if (type >= 50 && type <= 59) return 'Peschereccio';
+    return 'Altro';
+}
+
+async function loadAIS() {
+    if (!aisEnabled) return;
+    try {
+        const r = await fetch('/api/ais');
+        const data = await r.json();
+        clearAISMarkers();
+        for (const v of data.vessels || []) {
+            const col = vesselColor(v.type);
+            const rot = v.course ?? v.heading ?? 0;
+            const m = L.marker([v.lat, v.lon], {
+                icon: L.divIcon({
+                    className: '',
+                    html: `<div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:12px solid ${col};transform:rotate(${rot}deg);transform-origin:center;filter:drop-shadow(0 0 3px ${col});opacity:0.8;"></div>`,
+                    iconSize: [10, 12], iconAnchor: [5, 6]
+                })
+            }).addTo(map);
+            m.bindPopup(`<strong style="color:${col}">${v.name}</strong><br>${vesselTypeName(v.type)}<br>SOG: ${v.speed != null ? v.speed.toFixed(1) + ' kn' : '--'}<br>COG: ${v.course != null ? v.course.toFixed(0) + '°' : '--'}`);
+            aisMarkers.push(m);
+        }
+    } catch {}
+    aisTimer = setTimeout(loadAIS, 60000);
+}
+
+// ================================================================
+// NAVIGATION MODE
+// ================================================================
+let navActive = false;
+let navMap = null;
+let navMarker = null;
+let navWatchId = null;
+let navPos = null; // {lat, lon, speed, heading}
+let navRoute = null; // active route for nav
+let navLayers = [];
+let navRefreshId = null;
+
+const MS_TO_KN = 1.94384;
+const DEG_TO_RAD = Math.PI / 180;
+
+function haversineNm(lat1, lon1, lat2, lon2) {
+    const R = 3440.065; // earth radius in nautical miles
+    const dLat = (lat2 - lat1) * DEG_TO_RAD;
+    const dLon = (lon2 - lon1) * DEG_TO_RAD;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * DEG_TO_RAD) * Math.cos(lat2 * DEG_TO_RAD) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function findNearestWP(lat, lon, route) {
+    if (!route) return null;
+    let best = null, bestDist = Infinity;
+    for (let i = 0; i < route.wps.length; i++) {
+        const wp = route.wps[i];
+        const d = haversineNm(lat, lon, wp.lat, wp.lon);
+        if (d < bestDist) { bestDist = d; best = { idx: i, wp, dist: d }; }
+    }
+    return best;
+}
+
+function findNextWP(lat, lon, route) {
+    const nearest = findNearestWP(lat, lon, route);
+    if (!nearest) return null;
+    // Next = nearest + 1, or nearest if already at last
+    const nextIdx = Math.min(nearest.idx + 1, route.wps.length - 1);
+    const wp = route.wps[nextIdx];
+    return { wp, dist: haversineNm(lat, lon, wp.lat, wp.lon), idx: nextIdx };
+}
+
+function windRelLabel(windDir, heading) {
+    if (windDir == null || heading == null) return '---';
+    const rel = ((windDir - heading) % 360 + 360) % 360;
+    if (rel < 30 || rel > 330) return 'di prua';
+    if (rel < 60 || rel > 300) return 'al mascone';
+    if (rel < 120 || rel > 240) return 'al traverso';
+    if (rel < 150 || rel > 210) return 'al giardinetto';
+    return 'di poppa';
+}
+
+function windRelArrow(windDir, heading) {
+    if (windDir == null || heading == null) return '';
+    const rel = ((windDir - heading) % 360 + 360) % 360;
+    return arrow(rel);
+}
+
+function getDataForPos(lat, lon) {
+    // Find nearest data point
+    if (!APP.data) return null;
+    let best = null, bestDist = Infinity;
+    for (const key in APP.data) {
+        const [pLat, pLon] = key.split('_').map(Number);
+        const d = haversineNm(lat, lon, pLat, pLon);
+        if (d < bestDist) { bestDist = d; best = key; }
+    }
+    if (!best) return null;
+    const h = nowH();
+    return APP.data[best]?.tH?.[h] || null;
+}
+
+function toggleNav() {
+    if (navActive) return stopNav();
+    startNav();
+}
+
+function startNav() {
+    if (!('geolocation' in navigator)) {
+        alert('GPS non disponibile su questo dispositivo');
+        return;
+    }
+
+    // Pick active route: if on 5T tab and a route is selected, use it; else use Rotta Ovest
+    if (aTab === '5t' && selectedRoute) {
+        navRoute = selectedRoute;
+    } else {
+        navRoute = { id: 'W', name: 'Rotta Ovest', wps: ROUTE_W.map(r => ({ lat: PTS[r.key].lat, lon: PTS[r.key].lon, name: r.name, nm: 0 })) };
+    }
+
+    navActive = true;
+    document.body.classList.add('nav-active');
+    $('btnNav').classList.add('active');
+    $('btnNav').innerHTML = '✕';
+
+    // Init nav map
+    if (!navMap) {
+        navMap = L.map('navMap', { center: [44.31, 9.19], zoom: 15, zoomControl: false, attributionControl: false });
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(navMap);
+        L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', { maxZoom: 18, opacity: 0.85 }).addTo(navMap);
+    }
+    setTimeout(() => navMap.invalidateSize(), 100);
+
+    // Draw route on nav map
+    navClearLayers();
+    if (navRoute.wps) {
+        const coords = navRoute.wps.map(w => [w.lat, w.lon]);
+        navLayers.push(L.polyline(coords, { color: '#D4A853', weight: 3, opacity: 0.6, dashArray: '8,6' }).addTo(navMap));
+        navRoute.wps.forEach(w => {
+            const m = L.circleMarker([w.lat, w.lon], { radius: 5, color: '#D4A853', fillColor: '#D4A853', fillOpacity: 0.8, weight: 1 }).addTo(navMap);
+            m.bindPopup(`<strong>${w.name}</strong>`);
+            navLayers.push(m);
+        });
+    }
+
+    // Start GPS
+    navWatchId = navigator.geolocation.watchPosition(
+        pos => {
+            navPos = {
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude,
+                speed: pos.coords.speed != null ? pos.coords.speed * MS_TO_KN : null,
+                heading: pos.coords.heading,
+                accuracy: pos.coords.accuracy
+            };
+            // Use compass heading if GPS heading unavailable
+            if (navPos.heading == null && deviceHeading != null) navPos.heading = deviceHeading;
+            updateNavDisplay();
+        },
+        err => {
+            console.warn('GPS error:', err.message);
+            $('nvSOG').textContent = 'GPS!';
+        },
+        { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+    );
+
+    // Enable compass if not active
+    if (!compassActive) toggleCompass();
+
+    // Periodic re-render
+    navRefreshId = setInterval(updateNavDisplay, 5000);
+}
+
+function stopNav() {
+    navActive = false;
+    document.body.classList.remove('nav-active');
+    $('btnNav').classList.remove('active');
+    $('btnNav').innerHTML = '⚓';
+    if (navWatchId != null) { navigator.geolocation.clearWatch(navWatchId); navWatchId = null; }
+    if (navRefreshId) { clearInterval(navRefreshId); navRefreshId = null; }
+    navClearLayers();
+    // Re-trigger main map resize
+    setTimeout(() => map.invalidateSize(), 100);
+}
+
+function navClearLayers() {
+    navLayers.forEach(l => { if (navMap) navMap.removeLayer(l); });
+    navLayers = [];
+}
+
+function updateNavDisplay() {
+    if (!navActive || !navPos) return;
+
+    // Update marker
+    if (navMarker) navMap.removeLayer(navMarker);
+    const headRad = navPos.heading != null ? navPos.heading : 0;
+    navMarker = L.marker([navPos.lat, navPos.lon], {
+        icon: L.divIcon({
+            className: '',
+            html: `<div style="width:20px;height:20px;position:relative;">
+                <div style="width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:16px solid #3B82F6;transform:rotate(${headRad}deg);transform-origin:center center;filter:drop-shadow(0 0 6px rgba(59,130,246,.6));position:absolute;top:2px;left:2px;"></div>
+                <div style="width:6px;height:6px;background:#60A5FA;border-radius:50%;position:absolute;top:7px;left:7px;box-shadow:0 0 8px rgba(96,165,250,.8);"></div>
+            </div>`,
+            iconSize: [20, 20], iconAnchor: [10, 10]
+        })
+    }).addTo(navMap);
+
+    // Center map on position
+    navMap.setView([navPos.lat, navPos.lon], navMap.getZoom(), { animate: true, duration: 0.5 });
+
+    // Current conditions at position
+    const here = getDataForPos(navPos.lat, navPos.lon);
+
+    // Wind card — media dei due modelli se disponibili, con ⚠ se discordano
+    if (here) {
+        let windVal = here.wind;
+        let windDiscord = false;
+        if (here.mn_wind != null) {
+            const diff = Math.abs(here.wind - here.mn_wind);
+            windVal = (here.wind + here.mn_wind) / 2; // media dei due modelli
+            windDiscord = diff > 5;
+        }
+        const wEv = eU(windVal, S75.vento);
+        $('nbWind').className = 'nb ' + sC(wEv);
+        $('nvWind').textContent = windVal.toFixed(0) + (windDiscord ? ' ⚠' : '');
+    }
+
+    // Waves card — con dato boa ISPRA se disponibile
+    if (here && here.waves != null) {
+        let waveText = here.waves.toFixed(1);
+        if (APP.ispra?.waveH != null) {
+            waveText += ` (${APP.ispra.waveH.toFixed(1)})`;
+        }
+        const wavEv = eU(here.waves, S75.onde);
+        $('nbWaves').className = 'nb ' + sC(wavEv);
+        $('nvWaves').textContent = waveText;
+    }
+
+    // SOG
+    if (navPos.speed != null && navPos.speed >= 0) {
+        $('nvSOG').textContent = navPos.speed.toFixed(1);
+    }
+
+    // Heading
+    const hdg = navPos.heading != null ? Math.round(navPos.heading) : null;
+    $('nvHeading').textContent = hdg != null ? `Heading ${hdg}°` : 'Heading ---°';
+
+    // Wind relative
+    if (here && hdg != null) {
+        const relLabel = windRelLabel(here.windDir, hdg);
+        const relArrow = windRelArrow(here.windDir, hdg);
+        const wn = windName(here.windDir);
+        $('nvWindRel').textContent = `${relArrow} Vento ${wn.name} ${relLabel}`;
+    }
+
+    // Next waypoint + ahead conditions
+    if (navRoute) {
+        const next = findNextWP(navPos.lat, navPos.lon, navRoute);
+        if (next) {
+            $('nvWP').textContent = `${next.wp.name} | ${next.dist.toFixed(1)} mn`;
+            const aheadData = getDataForPos(next.wp.lat, next.wp.lon);
+            if (aheadData) {
+                let html = `<span>💨 ${aheadData.wind.toFixed(0)} kn ${compass(aheadData.windDir)}</span>`;
+                if (aheadData.waves != null) html += `<span>🌊 ${aheadData.waves.toFixed(1)} m</span>`;
+                if (aheadData.gusts > aheadData.wind + 5) html += `<span>⚡ Raff. ${aheadData.gusts.toFixed(0)} kn</span>`;
+                // Tide info in ahead panel
+                if (APP.tides?.days?.[0]?.tides?.length) {
+                    const now = new Date();
+                    const nextTide = APP.tides.days[0].tides.find(t => {
+                        const tTime = t.time.split(' ').pop() || t.time;
+                        return new Date(APP.tides.days[0].date + 'T' + tTime) > now;
+                    });
+                    if (nextTide) {
+                        const arrow = nextTide.type === 'HIGH' ? '↑' : '↓';
+                        html += `<span>🌊 Marea ${arrow} ${nextTide.height.toFixed(1)}m</span>`;
+                    }
+                }
+                $('navAheadRow').innerHTML = html;
+
+                // Alert if conditions ahead are worse
+                if (here) {
+                    const hereEv = evH(here, S75);
+                    const aheadEv = evH(aheadData, S75);
+                    let alertText = null;
+                    if (aheadEv.ov > hereEv.ov) {
+                        alertText = aheadEv.ov >= 2
+                            ? '⚠ CONDIZIONI PEGGIORI AVANTI — VALUTARE RIENTRO'
+                            : '⚠ Condizioni in peggioramento avanti';
+                    }
+                    // ARPAL warning: local stations detect worse conditions
+                    if (APP.arpal?.stations) {
+                        for (const s of Object.values(APP.arpal.stations)) {
+                            if (s.wind != null && here.wind != null && s.wind > here.wind + 5) {
+                                alertText = (alertText ? alertText + ' · ' : '') + `⚠ Stazione ${s.name}: vento ${s.wind} kn misurato`;
+                            }
+                        }
+                    }
+                    let alertDiv = $('navAlert');
+                    if (alertText) {
+                        if (!alertDiv) {
+                            alertDiv = document.createElement('div');
+                            alertDiv.id = 'navAlert';
+                            alertDiv.className = 'nav-alert';
+                            $('navAhead').appendChild(alertDiv);
+                        }
+                        alertDiv.textContent = alertText;
+                        alertDiv.style.display = 'block';
+                    } else if (alertDiv) {
+                        alertDiv.style.display = 'none';
+                    }
+                }
+            }
+        }
+    }
+
+    // AIS vessels on nav map
+    if (aisEnabled && navMap) {
+        // Remove old AIS markers from navMap
+        navLayers.filter(l => l._isAIS).forEach(l => navMap.removeLayer(l));
+        navLayers = navLayers.filter(l => !l._isAIS);
+        // Copy current AIS markers to navMap
+        for (const m of aisMarkers) {
+            const ll = m.getLatLng();
+            const navM = L.marker(ll, { icon: m.options.icon }).addTo(navMap);
+            navM._isAIS = true;
+            navLayers.push(navM);
+            // Check proximity to route — warn if within 0.5nm
+            if (navPos && navRoute) {
+                const dist = haversineNm(navPos.lat, navPos.lon, ll.lat, ll.lng);
+                if (dist < 0.5) {
+                    let alertDiv = $('navAlert');
+                    if (!alertDiv) {
+                        alertDiv = document.createElement('div');
+                        alertDiv.id = 'navAlert';
+                        alertDiv.className = 'nav-alert';
+                        $('navAhead').appendChild(alertDiv);
+                    }
+                    const existing = alertDiv.textContent || '';
+                    if (!existing.includes('Traffico')) {
+                        alertDiv.textContent = (existing ? existing + ' · ' : '') + '🚢 Traffico navale nelle vicinanze';
+                        alertDiv.style.display = 'block';
+                    }
+                }
+            }
+        }
     }
 }
 
