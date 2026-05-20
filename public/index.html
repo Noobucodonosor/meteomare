@@ -523,13 +523,17 @@ function evCode(c){if(c<=3)return 0;if([65,82,95,96,99].includes(c))return 2;ret
 // ================================================================
 // MODE: Direttrice / Comandante
 // ================================================================
+// Forward declaration — navActive must be var (not let) to avoid TDZ with setMode
+var navActive = false;
+
 let mode = localStorage.getItem('mm_mode') || 'dir';
 function setMode(m){
     if(m==='cmd'){
         // Comandante = helm display (GPS navigation)
         mode='cmd';localStorage.setItem('mm_mode','cmd');
         $('mDir').classList.remove('a');$('mCmd').classList.add('a');
-        startNav();
+        // startNav is defined later — defer to ensure DOM + variables ready
+        setTimeout(()=>{ if(typeof startNav==='function') startNav(); }, 0);
         return;
     }
     // Direttrice = all data visible (ex Comandante + ex Direttrice merged)
@@ -538,8 +542,8 @@ function setMode(m){
     if(navActive) stopNav();
     if(APP.data){renderCharts();renderTable(APP.data);}
 }
-// Don't auto-enter nav on page load
-if(mode==='cmd') mode='dir';
+// Always start in Direttrice on page load
+mode='dir';
 setMode(mode);
 
 // ================================================================
@@ -1450,16 +1454,15 @@ async function loadAIS() {
 }
 
 // ================================================================
-// NAVIGATION MODE
+// NAVIGATION MODE (navActive declared above setMode via var hoisting)
 // ================================================================
-let navActive = false;
-let navMap = null;
-let navMarker = null;
-let navWatchId = null;
-let navPos = null; // {lat, lon, speed, heading}
-let navRoute = null; // active route for nav
-let navLayers = [];
-let navRefreshId = null;
+var navMap = null;
+var navMarker = null;
+var navWatchId = null;
+var navPos = null; // {lat, lon, speed, heading}
+var navRoute = null; // active route for nav
+var navLayers = [];
+var navRefreshId = null;
 
 const MS_TO_KN = 1.94384;
 const DEG_TO_RAD = Math.PI / 180;
