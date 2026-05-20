@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0B1120">
 <title>MeteoMare · Promontorio di Portofino</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛵</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 :root{--bg:#0B1120;--bg2:#111827;--card:#1A2332;--card2:#1F2A3D;--border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.1);--text:#F1F5F9;--text2:#94A3B8;--text3:#64748B;--gold:#D4A853;--green:#34D399;--green2:#059669;--gg:rgba(52,211,153,.15);--amber:#FBBF24;--amber2:#D97706;--ag:rgba(251,191,36,.12);--red:#F87171;--red2:#DC2626;--rg:rgba(248,113,113,.12);
@@ -41,8 +41,7 @@ header{background:var(--bg2);padding:10px 16px;padding-top:calc(10px + var(--sat
 .src-bar{display:flex;align-items:center;justify-content:center;gap:6px;padding:5px;font-size:9px;color:var(--text3);background:var(--bg2);border-bottom:1px solid var(--border);}
 .sd{width:5px;height:5px;border-radius:50%;}.sd.on{background:var(--green);box-shadow:0 0 4px var(--green);}.sd.off{background:var(--text3);}
 main{padding:12px;max-width:520px;margin:0 auto;}.tc{display:none;}.tc.a{display:block;}
-/* CMD-ONLY: hidden in direttrice mode */
-body.dir .cmd{display:none!important;}
+/* In Direttrice mode: show everything (no hiding) */
 /* STATUS */
 .st{border-radius:14px;padding:20px;text-align:center;margin-bottom:14px;border:1px solid var(--border2);}
 .st.green{background:linear-gradient(135deg,rgba(5,150,105,.18),rgba(4,120,87,.05));border-color:rgba(52,211,153,.2);box-shadow:0 0 30px var(--gg);}
@@ -153,31 +152,59 @@ body.dir .cmd{display:none!important;}
 .sun{display:flex;justify-content:center;gap:20px;padding:6px;font-size:10px;color:var(--text3);}
 footer{padding:14px;text-align:center;max-width:520px;margin:0 auto;font-size:8px;color:var(--text3);line-height:1.7;}
 footer strong{color:var(--text2);}
-/* NAV MODE */
-.nav-screen{display:none;flex-direction:column;height:calc(100vh - 50px);height:calc(100dvh - 50px);}
+/* ═══════════════════════════════════════════════════════
+   COMANDANTE — Helm display. Garmin chartplotter aesthetic.
+   Black void. High-contrast gauges. One hand. Spray-proof.
+   ═══════════════════════════════════════════════════════ */
+.nav-screen{display:none;flex-direction:column;position:fixed;inset:0;z-index:500;background:#000;}
 body.nav-active .nav-screen{display:flex;}
-body.nav-active .tc,body.nav-active .tabs,body.nav-active footer,body.nav-active .rule,body.nav-active #mapWrap,body.nav-active #srcBar,body.nav-active #loadV{display:none!important;}
-body.nav-active header .hbtns>*:not(#btnNav){display:none;}
-body.nav-active .hl .sub{display:none;}
-#navMap{flex:1;min-height:0;z-index:1;}
-.nav-hud{background:var(--bg);padding:8px 12px;padding-bottom:calc(8px + var(--sab));}
-.nav-big{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;}
-.nb{background:var(--card);border-radius:14px;padding:12px 8px;text-align:center;border:1px solid var(--border);}
-.nb-v{font-size:32px;font-weight:900;line-height:1;letter-spacing:-1px;}
-.nb-u{font-size:11px;font-weight:700;color:var(--text3);margin-top:2px;}
-.nb-l{font-size:9px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:1px;font-weight:600;}
-.nb.green .nb-v{color:var(--green);}.nb.amber .nb-v{color:var(--amber);}.nb.red .nb-v{color:var(--red);}
-.nav-ahead{background:var(--card);border-radius:12px;padding:10px 14px;border:1px solid var(--border);margin-bottom:8px;}
-.nav-ahead-h{font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
-.nav-ahead-row{display:flex;gap:12px;font-size:12px;color:var(--text);flex-wrap:wrap;}
-.nav-ahead-row span{display:flex;align-items:center;gap:4px;}
-.nav-alert{background:var(--rg);border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:6px 10px;margin-top:6px;font-size:11px;font-weight:700;color:var(--red);}
-.nav-info{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);padding:4px 0;}
-.nav-info-l{font-weight:700;}.nav-info-r{color:var(--text3);}
-.nav-wind-rel{text-align:center;font-size:10px;color:var(--text3);font-weight:600;margin-top:2px;}
+body.nav-active .tc,body.nav-active .tabs,body.nav-active footer,body.nav-active .rule,body.nav-active #mapWrap,body.nav-active #srcBar,body.nav-active #loadV,body.nav-active header{display:none!important;}
+
+/* Nav header — minimal, 40px */
+.nav-header{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;padding-top:calc(6px + var(--sat));background:#000;border-bottom:1px solid rgba(255,255,255,.08);height:40px;flex-shrink:0;}
+.nav-title{font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:2px;text-transform:uppercase;}
+.nav-exit{width:48px;height:32px;background:rgba(255,60,60,.15);border:1px solid rgba(255,60,60,.3);border-radius:6px;color:#FF3333;font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;}
+.nav-exit:active{background:rgba(255,60,60,.3);transform:scale(.95);}
+
+/* Map — dominant */
+#navMap{flex:1;min-height:0;z-index:1;position:relative;}
+
+/* HUD gauges — overlay on map bottom */
+.nav-hud{position:absolute;bottom:0;left:0;right:0;z-index:400;pointer-events:none;}
+.nav-hud>*{pointer-events:auto;}
+
+/* 3 primary gauges — the only thing the helmsman reads */
+.nav-gauges{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;padding:0 4px 2px;}
+.ng{background:rgba(0,0,0,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);text-align:center;padding:10px 4px 8px;border-top:2px solid rgba(255,255,255,.06);}
+.ng:first-child{border-radius:0 0 0 12px;}.ng:last-child{border-radius:0 0 12px 0;}
+.ng-icon{font-size:14px;opacity:.5;margin-bottom:2px;}
+.ng-v{font-family:'Oswald',sans-serif;font-size:54px;font-weight:700;line-height:1;letter-spacing:-2px;color:#fff;text-shadow:0 0 20px rgba(255,255,255,.15);}
+.ng-u{font-family:'Oswald',sans-serif;font-size:13px;font-weight:500;color:rgba(255,255,255,.35);letter-spacing:3px;text-transform:uppercase;margin-top:1px;}
+.ng-l{font-size:9px;font-weight:600;color:rgba(255,255,255,.25);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
+.ng.ok .ng-v{color:#00E676;text-shadow:0 0 30px rgba(0,230,118,.2);}
+.ng.warn .ng-v{color:#FFB800;text-shadow:0 0 30px rgba(255,184,0,.2);}
+.ng.danger .ng-v{color:#FF3333;text-shadow:0 0 30px rgba(255,51,51,.25);}
+.ng-discord{font-size:18px;vertical-align:super;color:#FFB800;margin-left:2px;}
+
+/* Ahead panel — below map */
+.nav-ahead{background:#000;padding:10px 14px;padding-bottom:calc(6px + var(--sab));flex-shrink:0;border-top:1px solid rgba(255,255,255,.06);}
+.nav-wp{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.nav-wp-name{font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;color:#fff;letter-spacing:1px;}
+.nav-wp-dist{font-family:'Oswald',sans-serif;font-size:16px;font-weight:500;color:rgba(255,255,255,.4);}
+.nav-ahead-row{display:flex;gap:14px;font-size:13px;color:rgba(255,255,255,.7);flex-wrap:wrap;font-weight:500;}
+.nav-ahead-row span{display:flex;align-items:center;gap:3px;}
+.nav-bearing{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.04);}
+.nav-hdg{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:1px;}
+.nav-wind-rel{font-size:12px;font-weight:600;color:rgba(255,255,255,.35);letter-spacing:.5px;}
+
+/* Alert bar — vibrates and screams */
+.nav-alert{background:rgba(255,51,51,.12);border-top:2px solid #FF3333;padding:10px 14px;font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;color:#FF3333;letter-spacing:1px;text-align:center;text-transform:uppercase;display:none;}
+.nav-alert.active{display:block;animation:alertFlash 1.5s ease-in-out infinite;}
+@keyframes alertFlash{0%,100%{opacity:1;}50%{opacity:.7;}}
+
+/* Nav button in main header */
 #btnNav{background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.3);color:#60A5FA;}
-#btnNav.active{background:#2563EB;border-color:#2563EB;color:#fff;animation:navPulse 2s ease-in-out infinite;}
-@keyframes navPulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4);}50%{box-shadow:0 0 0 8px rgba(37,99,235,0);}}
+#btnNav.active{background:#2563EB;border-color:#2563EB;color:#fff;}
 .loading{text-align:center;padding:50px 20px;}
 .ld-s{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 10px;}
 .ld-t{font-size:10px;color:var(--text3);}
@@ -192,10 +219,10 @@ body.nav-active .hl .sub{display:none;}
 <header>
 <div class="hl"><span class="logo">⛵</span><div><h1>MeteoMare</h1><div class="sub">Promontorio di Portofino</div></div></div>
 <div class="hbtns">
-<div class="mode-tog"><button class="mode-btn a" id="mDir" onclick="setMode('dir')">👔 Direttrice</button><button class="mode-btn" id="mCmd" onclick="setMode('cmd')">⚓ Comandante</button></div>
+<div class="mode-tog"><button class="mode-btn a" id="mDir" onclick="setMode('dir')">📋 Direttrice</button><button class="mode-btn" id="mCmd" onclick="setMode('cmd')">⚓ Comandante</button></div>
 <button class="bi" id="btnEMOD" onclick="toggleEMODnet()" title="Batimetria HD">🗺</button>
 <button class="bi" id="btnAIS" onclick="toggleAIS()" title="Traffico AIS">🚢</button>
-<button class="bi" id="btnNav" onclick="toggleNav()">⚓</button>
+<button class="bi" id="btnNav" style="display:none;">⚓</button>
 <button class="bi" onclick="loadData()" id="btnR">↻</button>
 </div>
 </header>
@@ -337,21 +364,27 @@ STORMGLASS_DAILY_LIMIT=500</pre></div>
 
 <footer><strong>Strumento di supporto alla decisione.</strong> La decisione finale spetta SEMPRE al comandante. Nel dubbio, non si esce.</footer>
 
-<!-- ============ NAVIGAZIONE ============ -->
+<!-- ============ COMANDANTE — HELM DISPLAY ============ -->
 <div class="nav-screen" id="navScreen">
-<div id="navMap"></div>
-<div class="nav-hud" id="navHud">
-<div class="nav-big">
-<div class="nb" id="nbWind"><div class="nb-v" id="nvWind">--</div><div class="nb-u">KN</div><div class="nb-l">Vento</div></div>
-<div class="nb" id="nbWaves"><div class="nb-v" id="nvWaves">--</div><div class="nb-u">m</div><div class="nb-l">Onde</div></div>
-<div class="nb" id="nbSOG"><div class="nb-v" id="nvSOG">--</div><div class="nb-u">KN</div><div class="nb-l">SOG</div></div>
+<div class="nav-header">
+<span class="nav-title">⚓ Comandante</span>
+<button class="nav-exit" onclick="stopNav()">ESCI</button>
 </div>
-<div class="nav-ahead" id="navAhead">
-<div class="nav-ahead-h">Davanti a te</div>
-<div class="nav-ahead-row" id="navAheadRow">Seleziona una rotta per vedere le condizioni avanti</div>
+<div style="flex:1;position:relative;min-height:0;">
+<div id="navMap" style="position:absolute;inset:0;"></div>
+<div class="nav-hud">
+<div class="nav-gauges">
+<div class="ng" id="ngWind"><div class="ng-icon">💨</div><div class="ng-v" id="nvWind">--</div><div class="ng-u">KN</div><div class="ng-l">Vento</div></div>
+<div class="ng" id="ngWaves"><div class="ng-icon">🌊</div><div class="ng-v" id="nvWaves">--</div><div class="ng-u">M</div><div class="ng-l">Onde</div></div>
+<div class="ng" id="ngSOG"><div class="ng-icon">⚓</div><div class="ng-v" id="nvSOG">--</div><div class="ng-u">KN</div><div class="ng-l">SOG</div></div>
 </div>
-<div class="nav-info"><span class="nav-info-l" id="nvHeading">Heading ---°</span><span class="nav-info-r" id="nvWP">-- | --mn</span></div>
-<div class="nav-wind-rel" id="nvWindRel">Vento relativo: ---</div>
+</div>
+</div>
+<div class="nav-alert" id="navAlert"></div>
+<div class="nav-ahead">
+<div class="nav-wp"><span class="nav-wp-name" id="nvWPName">---</span><span class="nav-wp-dist" id="nvWPDist">--mn</span></div>
+<div class="nav-ahead-row" id="navAheadRow">In attesa GPS...</div>
+<div class="nav-bearing"><span class="nav-hdg" id="nvHeading">---°</span><span class="nav-wind-rel" id="nvWindRel">---</span></div>
 </div>
 </div>
 
@@ -491,10 +524,22 @@ function evCode(c){if(c<=3)return 0;if([65,82,95,96,99].includes(c))return 2;ret
 // MODE: Direttrice / Comandante
 // ================================================================
 let mode = localStorage.getItem('mm_mode') || 'dir';
-function setMode(m){mode=m;localStorage.setItem('mm_mode',m);
-document.body.classList.toggle('dir',m==='dir');
-$('mDir').classList.toggle('a',m==='dir');$('mCmd').classList.toggle('a',m==='cmd');
-if(m==='cmd'&&APP.data){renderCharts();renderTable(APP.data);}}
+function setMode(m){
+    if(m==='cmd'){
+        // Comandante = helm display (GPS navigation)
+        mode='cmd';localStorage.setItem('mm_mode','cmd');
+        $('mDir').classList.remove('a');$('mCmd').classList.add('a');
+        startNav();
+        return;
+    }
+    // Direttrice = all data visible (ex Comandante + ex Direttrice merged)
+    mode='dir';localStorage.setItem('mm_mode','dir');
+    $('mDir').classList.add('a');$('mCmd').classList.remove('a');
+    if(navActive) stopNav();
+    if(APP.data){renderCharts();renderTable(APP.data);}
+}
+// Don't auto-enter nav on page load
+if(mode==='cmd') mode='dir';
 setMode(mode);
 
 // ================================================================
@@ -1498,7 +1543,7 @@ function startNav() {
     navActive = true;
     document.body.classList.add('nav-active');
     $('btnNav').classList.add('active');
-    $('btnNav').innerHTML = '✕';
+    requestWakeLock();
 
     // Init nav map
     if (!navMap) {
@@ -1552,9 +1597,12 @@ function stopNav() {
     navActive = false;
     document.body.classList.remove('nav-active');
     $('btnNav').classList.remove('active');
-    $('btnNav').innerHTML = '⚓';
+    releaseWakeLock();
     if (navWatchId != null) { navigator.geolocation.clearWatch(navWatchId); navWatchId = null; }
     if (navRefreshId) { clearInterval(navRefreshId); navRefreshId = null; }
+    // Return to Direttrice
+    mode = 'dir'; localStorage.setItem('mm_mode', 'dir');
+    $('mDir').classList.add('a'); $('mCmd').classList.remove('a');
     navClearLayers();
     // Re-trigger main map resize
     setTimeout(() => map.invalidateSize(), 100);
@@ -1565,20 +1613,33 @@ function navClearLayers() {
     navLayers = [];
 }
 
+// Wake lock — keep screen on while navigating
+let wakeLock = null;
+async function requestWakeLock() {
+    try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch {}
+}
+async function releaseWakeLock() {
+    try { if (wakeLock) { await wakeLock.release(); wakeLock = null; } } catch {}
+}
+function alertVibrate() {
+    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch {}
+}
+let lastAlertState = false;
+
 function updateNavDisplay() {
     if (!navActive || !navPos) return;
 
-    // Update marker
+    // Update marker — large blue triangle pointing at heading
     if (navMarker) navMap.removeLayer(navMarker);
-    const headRad = navPos.heading != null ? navPos.heading : 0;
+    const headDeg = navPos.heading != null ? navPos.heading : 0;
     navMarker = L.marker([navPos.lat, navPos.lon], {
         icon: L.divIcon({
             className: '',
-            html: `<div style="width:20px;height:20px;position:relative;">
-                <div style="width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:16px solid #3B82F6;transform:rotate(${headRad}deg);transform-origin:center center;filter:drop-shadow(0 0 6px rgba(59,130,246,.6));position:absolute;top:2px;left:2px;"></div>
-                <div style="width:6px;height:6px;background:#60A5FA;border-radius:50%;position:absolute;top:7px;left:7px;box-shadow:0 0 8px rgba(96,165,250,.8);"></div>
+            html: `<div style="width:24px;height:24px;position:relative;">
+                <div style="width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:20px solid #2979FF;transform:rotate(${headDeg}deg);transform-origin:center center;filter:drop-shadow(0 0 8px rgba(41,121,255,.7));position:absolute;top:2px;left:2px;"></div>
+                <div style="width:8px;height:8px;background:#448AFF;border-radius:50%;position:absolute;top:8px;left:8px;box-shadow:0 0 12px rgba(68,138,255,.9);"></div>
             </div>`,
-            iconSize: [20, 20], iconAnchor: [10, 10]
+            iconSize: [24, 24], iconAnchor: [12, 12]
         })
     }).addTo(navMap);
 
@@ -1588,59 +1649,60 @@ function updateNavDisplay() {
     // Current conditions at position
     const here = getDataForPos(navPos.lat, navPos.lon);
 
-    // Wind card — media dei due modelli se disponibili, con ⚠ se discordano
+    // === GAUGES ===
+    const gaugeCls = (val, thresholds) => val <= thresholds.v ? 'ok' : val <= thresholds.g ? 'warn' : 'danger';
+
+    // WIND gauge — average of two models, discord indicator
     if (here) {
         let windVal = here.wind;
         let windDiscord = false;
         if (here.mn_wind != null) {
             const diff = Math.abs(here.wind - here.mn_wind);
-            windVal = (here.wind + here.mn_wind) / 2; // media dei due modelli
+            windVal = (here.wind + here.mn_wind) / 2;
             windDiscord = diff > 5;
         }
-        const wEv = eU(windVal, S75.vento);
-        $('nbWind').className = 'nb ' + sC(wEv);
-        $('nvWind').textContent = windVal.toFixed(0) + (windDiscord ? ' ⚠' : '');
+        $('ngWind').className = 'ng ' + gaugeCls(windVal, S75.vento);
+        $('nvWind').innerHTML = windVal.toFixed(0) + (windDiscord ? '<span class="ng-discord">!</span>' : '');
     }
 
-    // Waves card — con dato boa ISPRA se disponibile
+    // WAVES gauge — with ISPRA buoy reading
     if (here && here.waves != null) {
-        let waveText = here.waves.toFixed(1);
+        $('ngWaves').className = 'ng ' + gaugeCls(here.waves, S75.onde);
+        let waveHtml = here.waves.toFixed(1);
         if (APP.ispra?.waveH != null) {
-            waveText += ` (${APP.ispra.waveH.toFixed(1)})`;
+            waveHtml = here.waves.toFixed(1) + `<span style="font-size:18px;opacity:.4;margin-left:2px;">${APP.ispra.waveH.toFixed(1)}</span>`;
         }
-        const wavEv = eU(here.waves, S75.onde);
-        $('nbWaves').className = 'nb ' + sC(wavEv);
-        $('nvWaves').textContent = waveText;
+        $('nvWaves').innerHTML = waveHtml;
     }
 
-    // SOG
+    // SOG gauge
     if (navPos.speed != null && navPos.speed >= 0) {
         $('nvSOG').textContent = navPos.speed.toFixed(1);
     }
 
-    // Heading
+    // === BEARING BAR ===
     const hdg = navPos.heading != null ? Math.round(navPos.heading) : null;
-    $('nvHeading').textContent = hdg != null ? `Heading ${hdg}°` : 'Heading ---°';
+    $('nvHeading').textContent = hdg != null ? `${hdg}°` : '---°';
 
-    // Wind relative
     if (here && hdg != null) {
-        const relLabel = windRelLabel(here.windDir, hdg);
-        const relArrow = windRelArrow(here.windDir, hdg);
         const wn = windName(here.windDir);
-        $('nvWindRel').textContent = `${relArrow} Vento ${wn.name} ${relLabel}`;
+        $('nvWindRel').textContent = `${wn.name} ${windRelLabel(here.windDir, hdg)}`;
     }
 
-    // Next waypoint + ahead conditions
+    // === AHEAD PANEL ===
+    let alertText = null;
+
     if (navRoute) {
         const next = findNextWP(navPos.lat, navPos.lon, navRoute);
         if (next) {
-            $('nvWP').textContent = `${next.wp.name} | ${next.dist.toFixed(1)} mn`;
+            $('nvWPName').textContent = '→ ' + next.wp.name;
+            $('nvWPDist').textContent = next.dist.toFixed(1) + ' mn';
             const aheadData = getDataForPos(next.wp.lat, next.wp.lon);
             if (aheadData) {
-                let html = `<span>💨 ${aheadData.wind.toFixed(0)} kn ${compass(aheadData.windDir)}</span>`;
-                if (aheadData.waves != null) html += `<span>🌊 ${aheadData.waves.toFixed(1)} m</span>`;
-                if (aheadData.gusts > aheadData.wind + 5) html += `<span>⚡ Raff. ${aheadData.gusts.toFixed(0)} kn</span>`;
-                // Tide info in ahead panel
+                let html = `<span>💨 ${aheadData.wind.toFixed(0)}kn ${compass(aheadData.windDir)}</span>`;
+                if (aheadData.waves != null) html += `<span>🌊 ${aheadData.waves.toFixed(1)}m</span>`;
+                if (aheadData.gusts > aheadData.wind + 5) html += `<span style="color:#FFB800">⚡ Raff ${aheadData.gusts.toFixed(0)}kn</span>`;
+                // Tide
                 if (APP.tides?.days?.[0]?.tides?.length) {
                     const now = new Date();
                     const nextTide = APP.tides.days[0].tides.find(t => {
@@ -1648,78 +1710,53 @@ function updateNavDisplay() {
                         return new Date(APP.tides.days[0].date + 'T' + tTime) > now;
                     });
                     if (nextTide) {
-                        const arrow = nextTide.type === 'HIGH' ? '↑' : '↓';
-                        html += `<span>🌊 Marea ${arrow} ${nextTide.height.toFixed(1)}m</span>`;
+                        html += `<span>🌊 ${nextTide.type === 'HIGH' ? '↑' : '↓'}${nextTide.height.toFixed(1)}m</span>`;
                     }
                 }
                 $('navAheadRow').innerHTML = html;
 
-                // Alert if conditions ahead are worse
+                // Alert: conditions ahead worse
                 if (here) {
                     const hereEv = evH(here, S75);
                     const aheadEv = evH(aheadData, S75);
-                    let alertText = null;
                     if (aheadEv.ov > hereEv.ov) {
                         alertText = aheadEv.ov >= 2
-                            ? '⚠ CONDIZIONI PEGGIORI AVANTI — VALUTARE RIENTRO'
-                            : '⚠ Condizioni in peggioramento avanti';
-                    }
-                    // ARPAL warning: local stations detect worse conditions
-                    if (APP.arpal?.stations) {
-                        for (const s of Object.values(APP.arpal.stations)) {
-                            if (s.wind != null && here.wind != null && s.wind > here.wind + 5) {
-                                alertText = (alertText ? alertText + ' · ' : '') + `⚠ Stazione ${s.name}: vento ${s.wind} kn misurato`;
-                            }
-                        }
-                    }
-                    let alertDiv = $('navAlert');
-                    if (alertText) {
-                        if (!alertDiv) {
-                            alertDiv = document.createElement('div');
-                            alertDiv.id = 'navAlert';
-                            alertDiv.className = 'nav-alert';
-                            $('navAhead').appendChild(alertDiv);
-                        }
-                        alertDiv.textContent = alertText;
-                        alertDiv.style.display = 'block';
-                    } else if (alertDiv) {
-                        alertDiv.style.display = 'none';
+                            ? 'CONDIZIONI PEGGIORI AVANTI — VALUTARE RIENTRO'
+                            : 'PEGGIORAMENTO AVANTI';
                     }
                 }
             }
         }
     }
 
-    // AIS vessels on nav map
+    // AIS proximity warning
     if (aisEnabled && navMap) {
-        // Remove old AIS markers from navMap
         navLayers.filter(l => l._isAIS).forEach(l => navMap.removeLayer(l));
         navLayers = navLayers.filter(l => !l._isAIS);
-        // Copy current AIS markers to navMap
         for (const m of aisMarkers) {
             const ll = m.getLatLng();
             const navM = L.marker(ll, { icon: m.options.icon }).addTo(navMap);
             navM._isAIS = true;
             navLayers.push(navM);
-            // Check proximity to route — warn if within 0.5nm
-            if (navPos && navRoute) {
+            if (navPos) {
                 const dist = haversineNm(navPos.lat, navPos.lon, ll.lat, ll.lng);
                 if (dist < 0.5) {
-                    let alertDiv = $('navAlert');
-                    if (!alertDiv) {
-                        alertDiv = document.createElement('div');
-                        alertDiv.id = 'navAlert';
-                        alertDiv.className = 'nav-alert';
-                        $('navAhead').appendChild(alertDiv);
-                    }
-                    const existing = alertDiv.textContent || '';
-                    if (!existing.includes('Traffico')) {
-                        alertDiv.textContent = (existing ? existing + ' · ' : '') + '🚢 Traffico navale nelle vicinanze';
-                        alertDiv.style.display = 'block';
-                    }
+                    alertText = (alertText ? alertText + ' · ' : '') + 'TRAFFICO NAVALE NELLE VICINANZE';
                 }
             }
         }
+    }
+
+    // Render alert
+    const alertEl = $('navAlert');
+    if (alertText) {
+        alertEl.textContent = alertText;
+        alertEl.classList.add('active');
+        // Vibrate on NEW alert
+        if (!lastAlertState) { alertVibrate(); lastAlertState = true; }
+    } else {
+        alertEl.classList.remove('active');
+        lastAlertState = false;
     }
 }
 
